@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>maze_slam_bringup</name>
+  <version>0.0.1</version>
+  <description>Minimal launch entry point for ROS2 maze SLAM experiments.</description>
+  <maintainer email="153813672+CXRISME@users.noreply.github.com">CXRISME</maintainer>
+  <!-- Project owner must choose the license before licensing redistribution. -->
+  <license>TODO</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

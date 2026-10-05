@@ -1,0 +1,19 @@
+# ROS2 / colcon generated output
+/build/
+/install/
+/log/
+# Machine-specific environment
+/config/robot.env
+.env
+# Python / editor caches
+__pycache__/
+*.py[cod]
+.vscode/
+.idea/
+# Raw rosbag2 recordings (keep the directory guide)
+/bags/*
+!/bags/README.md
+*.db3
+*.db3-shm
+*.db3-wal
+*.mcap

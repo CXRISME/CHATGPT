@@ -1,66 +1,66 @@
-# 实验记录：<YYYYMMDD_maze01_run01>
+# Experiment Record: <YYYYMMDD_maze01_run01>
 
-> 复制本文件创建新记录。未测项目写“未测／待确认”；以下为空模板，不代表已执行。
+> Copy this file to create a new record. Write "not measured" or "to be confirmed" for missing information. This blank template does not represent an executed experiment.
 
-## 目的与假设（Objective & Hypothesis）
+## Objective and Hypothesis
 
-- 本次要验证：
-- 预先定义的通过条件／失败条件：
-- 对照基线、唯一变化变量：
+- What this run will verify:
+- Predefined pass/fail criteria:
+- Comparison baseline and the single changed variable:
 
-## 环境与版本（Environment & Versions）
+## Environment and Versions
 
-| 项目 | 实测内容 |
+| Item | Observed details |
 | --- | --- |
-| 日期、时区、操作者 | |
-| 代码分支、提交 SHA；是否有未提交改动 | |
-| 电脑 OS、架构、ROS2、RMW 实现 | |
-| 树莓派型号、OS、ROS2；驱动／固件 | |
-| 雷达型号、frame_id、实际扫描频率 | |
-| SLAM Toolbox／Nav2 包版本 | |
-| 通信域、网络方式、时钟同步方式 | |
-| 迷宫编号、尺寸、墙材料与环境变化 | |
-| 电池、速度限制、起点／终点及行驶路线 | |
-| 参数文件路径与 SHA；use_sim_time | |
-| 地图版本、录包路径、外部数据位置与 SHA256 | |
+| Date, time zone and operator | |
+| Code branch and commit SHA; uncommitted changes | |
+| PC OS, architecture, ROS2 and RMW implementation | |
+| Raspberry Pi model, OS, ROS2, drivers and firmware | |
+| LiDAR model, frame ID and measured scan frequency | |
+| SLAM Toolbox / Nav2 package versions | |
+| Communication domain, network and clock synchronisation | |
+| Maze ID, dimensions, wall materials and environment changes | |
+| Battery, speed limits, start/goal and driven route | |
+| Parameter file path and SHA; use_sim_time | |
+| Map version, bag path, external data location and SHA256 | |
 
-## 操作与参数（Procedure & Parameters）
+## Procedure and Parameters
 
-按电脑／树莓派区分，粘贴实际执行的完整命令与关键输出；注明加载了哪些环境文件。不要粘贴密码、地址凭据或令牌。
+Separate PC and Raspberry Pi steps. Paste the complete commands actually executed and key outputs, and state which environment files were sourced. Exclude passwords, network credentials and tokens.
 
 ```bash
-# 本次实际命令
+# Commands actually executed for this run
 ```
 
-| 参数 | 基线值 | 本次值 | 修改原因 |
+| Parameter | Baseline value | This run's value | Reason for change |
 | --- | --- | --- | --- |
 | | | | |
 
-## 观察与结果（Observations & Results）
+## Observations and Results
 
-- 驱动、话题、TF 与时间戳检查：
-- 地图／扫描／回环观察：
-- 结果：未执行／通过／失败／部分通过（选择并说明）
+- Driver, topic, TF and timestamp checks:
+- Map, scan and loop closure observations:
+- Outcome: not run / passed / failed / partially passed (select and explain)
 
-| 指标 | 预定阈值 | 实测值与单位 | 方法／证据 |
+| Metric | Predefined threshold | Measured value and units | Method / evidence |
 | --- | --- | --- | --- |
-| 建图：固定墙段误差 | | | |
-| 定位：独立参考点误差 | | | |
-| 导航：成功次数／总尝试次数 | | | |
-| 导航：耗时、路径长度、碰撞 | | | |
+| Mapping: fixed wall segment error | | | |
+| Localisation: independent reference point error | | | |
+| Navigation: successful attempts / all attempts | | | |
+| Navigation: elapsed time, path length and collisions | | | |
 
-不适用指标写“不适用”，无真实参考位置时不报告绝对定位精度。重复实验分别编号，保留失败运行。
+Write "not applicable" where appropriate. Do not report absolute localisation accuracy without a ground-truth position. Give repeated runs separate IDs and preserve failures.
 
-## 证据索引（Evidence）
+## Evidence Index
 
-- RViz 截图／视频：
-- 地图 YAML + 图像：
-- rosbag2 信息（时长、消息数、话题、TF 是否完整）：
-- 日志片段、数据文件大小与校验值：
+- RViz screenshots / video:
+- Map YAML and image:
+- rosbag2 information: duration, message counts, topics and TF completeness:
+- Log excerpts, data file sizes and checksums:
 
-## 问题、解释与下一步（Discussion & Next Step）
+## Discussion and Next Step
 
-- 观察到的事实：
-- 推测原因（标明推测，别当作已证明）：
-- 限制与未验证项：
-- 下一次只改什么、如何验收：
+- Observed facts:
+- Suspected causes (label hypotheses rather than presenting them as proven):
+- Limitations and unverified items:
+- The next single change and its acceptance criteria:

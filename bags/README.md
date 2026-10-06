@@ -1,9 +1,9 @@
-# 数据录包（rosbag2）
+# rosbag2 Recordings
 
-本目录的录包默认由 `.gitignore` 排除，指南保留在 Git。命名：`YYYYMMDD_maze01_run01/`；每次实验使用新目录。
+Raw recordings in this directory are excluded by `.gitignore`; this guide remains tracked in Git. Naming: `YYYYMMDD_maze01_run01/`. Use a new directory for each run.
 
-最低关注话题：`/scan`、`/odom`、`/tf`、`/tf_static`，以实际驱动为准；仿真另记录 `/clock`。导航阶段按需扩充定位、目标、规划路径等话题，并记录类型与 QoS。
+Minimum topics to consider: `/scan`, `/odom`, `/tf` and `/tf_static`, adjusted to the actual driver. Also record `/clock` for simulation. During navigation, add localisation, goals, planned paths and other topics as needed, and record their types and QoS settings.
 
-录制／回放命令见 [setup.md](../docs/setup.md)。录制后检查消息数、时间范围、静态 TF 和可回放性。数据缺失时记录缺失，不能声称实验可完整复现。
+See [setup.md](../docs/setup.md) for recording and replay commands. After recording, check message counts, time ranges, static TF and replayability. Document missing data rather than claiming full reproducibility.
 
-大体积录包保存在选定的外部位置；实验记录注明可访问位置、文件名、大小、SHA256 与获取方式。`metadata.yaml` 本身不包含扫描数据，不能单独代替录包。不要提交私密网络信息或无关影像。
+Keep large recordings in a chosen external location. Record the accessible location, file names, sizes, SHA256 checksums and retrieval instructions in the experiment record. `metadata.yaml` alone contains no scan data and is not a substitute for a complete recording. Exclude private network details and unrelated imagery.

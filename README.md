@@ -1,31 +1,31 @@
 # CHATGPT
 
-## ROS2 SLAM / FYP 最小项目骨架
+## Minimal ROS2 SLAM / FYP Project Scaffold
 
-目标：使用基于树莓派（Raspberry Pi）的 TurtleBot3 Burger，扫描真实迷宫，完成同步定位与建图（Simultaneous Localisation and Mapping, SLAM），再基于地图定位并规划、执行路线。
+Goal: use a Raspberry Pi-based TurtleBot3 Burger to scan a real maze, perform Simultaneous Localisation and Mapping (SLAM), then localise within the saved map and plan and execute routes.
 
-**当前状态：项目骨架。** 提供文档、实验模板和 SLAM 启动入口；尚无实机建图、定位或导航的验证结果。导航（Navigation）是后续阶段，建图成功不代表已实现自主导航或自主探索（Autonomous Exploration）。
+**Current status: project scaffold.** Documentation, an experiment template and a SLAM launch entry point are provided. Mapping, localisation and navigation have not been validated on the physical robot. Navigation is a later stage; successful mapping alone does not demonstrate autonomous navigation or autonomous exploration.
 
-暂定复现基线：Ubuntu 22.04 + ROS2 Humble；机器人型号采用 Burger。实际电脑/树莓派系统、激光雷达（LiDAR）型号、固件与话题名仍需核实，不要为了匹配示例重装现有设备。
+Provisional reproduction baseline: Ubuntu 22.04 + ROS2 Humble, with the Burger model. The actual PC and Raspberry Pi operating systems, LiDAR model, firmware and topic names still need checking. Keep the existing device installations until their compatibility is confirmed.
 
-### 文件入口
+### File Guide
 
-| 路径 | 用途 |
+| Path | Purpose |
 | --- | --- |
-| [docs/setup.md](docs/setup.md) | 环境确认、依赖、编译、连接与首次建图 |
-| [config/README.md](config/README.md) | 配置项、时间源、坐标系和调参记录 |
-| [config/robot.env.example](config/robot.env.example) | 不含地址或凭据的环境变量示例 |
-| [src/maze_slam_bringup](src/maze_slam_bringup) | 自定义 ROS2 启动包（Bringup Package） |
-| [experiments/TEMPLATE.md](experiments/TEMPLATE.md) | 可复现实验记录模板 |
-| [maps/README.md](maps/README.md) | 地图文件和版本约定 |
-| [bags/README.md](bags/README.md) | rosbag2 数据录包约定 |
-| [docs/next-steps.md](docs/next-steps.md) | 分阶段开发任务和验收条件 |
+| [docs/setup.md](docs/setup.md) | Environment checks, dependencies, build, connectivity and first mapping run |
+| [config/README.md](config/README.md) | Configuration, clock sources, coordinate frames and parameter records |
+| [config/robot.env.example](config/robot.env.example) | Example environment variables without addresses or credentials |
+| [src/maze_slam_bringup](src/maze_slam_bringup) | Custom ROS2 bringup package |
+| [experiments/TEMPLATE.md](experiments/TEMPLATE.md) | Reproducible experiment record template |
+| [maps/README.md](maps/README.md) | Map file naming and version conventions |
+| [bags/README.md](bags/README.md) | rosbag2 recording conventions |
+| [docs/next-steps.md](docs/next-steps.md) | Development stages and acceptance criteria |
 
-### 从哪里开始
+### Getting Started
 
-1. 按 [环境说明](docs/setup.md) 核实两端系统、ROS2 版本和雷达；先完成 `/scan`、里程计（Odometry）和坐标变换（TF）检查。
-2. 安装依赖并用 `colcon` 编译本仓库。它可以直接作为工作空间（Workspace）根目录。
-3. 在已启动机器人驱动、TF 正常的前提下，在电脑运行：
+1. Follow the [setup guide](docs/setup.md) to confirm both systems, ROS2 versions and LiDAR. First check `/scan`, odometry and coordinate transforms (TF).
+2. Install dependencies and build this repository with `colcon`. The repository root can serve as the workspace root.
+3. With the robot drivers running and TF working, run the following on the PC:
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -34,13 +34,13 @@ source config/robot.env
 ros2 launch maze_slam_bringup mapping.launch.py use_sim_time:=false
 ```
 
-`robot.env` 必须先由示例复制并确认，见环境说明。启动入口只运行 SLAM Toolbox，不启动底盘驱动、不发布运动指令，也不启动 Nav2。
+Create and review `robot.env` from the example first, as described in the setup guide. This entry point runs SLAM Toolbox only. Robot drivers, motion commands and Nav2 are outside this launch file.
 
-4. 复制实验模板，记录首个实验，再保存地图与证据。下一阶段依次是地图定位、路径规划（Path Planning）和自主导航（Autonomous Navigation）。
+4. Copy the experiment template, record the first run, and save the map and evidence. The following stages are map-based localisation, path planning and autonomous navigation.
 
-### 提交约定
+### Contribution Conventions
 
-- 一次提交（Commit）对应一个可说明的改动；实验记录注明代码提交 SHA、参数文件及数据来源。
-- `build/`、`install/`、`log/`、本机环境文件与录包不会默认提交。小地图可以提交；大文件只记录可访问位置、大小及校验值。
-- 使用分支与拉取请求（Pull Request, PR）审阅变更，保留失败实验及原因。
-- 本次扩展保留原 README 标题与原始提交历史。开源许可尚未决定，`package.xml` 的 `TODO` 需在对外授权复用前补齐。
+- Each commit should describe one clear change. Experiment records must identify the code commit SHA, parameter files and data sources.
+- `build/`, `install/`, `log/`, local environment files and raw recordings are excluded by default. Small maps may be committed; record the location, size and checksum of large files instead.
+- Use branches and pull requests (PRs) to review changes. Preserve failed experiments and their explanations.
+- The original README heading and commit history are preserved. The project licence has not been selected; replace the `TODO` in `package.xml` before granting reuse rights.

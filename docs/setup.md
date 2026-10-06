@@ -1,10 +1,10 @@
-# 环境与首次运行（Setup）
+# Environment and First Run
 
-本说明以 Ubuntu 22.04 / ROS2 Humble 为暂定基线。尚未在用户实机验证；如果现有镜像不是 Humble，先记录实际环境并选择对应官方文档，不混用发行版（Distribution）。
+This guide uses Ubuntu 22.04 / ROS2 Humble as a provisional baseline. It has not been validated on the user's physical robot. If the existing image uses another distribution, record the actual environment and follow the matching official documentation. Avoid mixing ROS2 distributions.
 
-## 1. 先记录已有环境
+## 1. Record the Existing Environment
 
-电脑与树莓派分别记录以下输出到实验记录：
+Run these commands on both the PC and Raspberry Pi and include the outputs in the experiment record:
 
 ```bash
 cat /etc/os-release
@@ -14,11 +14,11 @@ printenv RMW_IMPLEMENTATION
 printenv ROS_DOMAIN_ID
 ```
 
-空的 `RMW_IMPLEMENTATION` 表示未显式指定 ROS 中间件，需记录实际使用实现。另记录树莓派型号、雷达型号、OpenCR 固件版本（能查到时）、电池情况及连接方式。当前仓库没有这些实测信息。
+An empty `RMW_IMPLEMENTATION` means the middleware has not been explicitly selected; record the implementation actually used. Also record the Raspberry Pi model, LiDAR model, OpenCR firmware version when available, battery condition and connection method. These measured details are not yet available in this repository.
 
-## 2. 电脑端依赖和编译
+## 2. PC Dependencies and Build
 
-前提：已按官方文档安装 ROS2 Humble，配置好软件源；下列命令只在匹配的 Ubuntu/ROS2 环境中执行。保留机器人现有镜像。
+Prerequisite: ROS2 Humble is installed following the official guide and its package repositories are configured. Run these commands only in a matching Ubuntu/ROS2 environment. Preserve the robot's existing image.
 
 ```bash
 sudo apt update
@@ -26,18 +26,18 @@ sudo apt install ros-humble-slam-toolbox ros-humble-nav2-map-server ros-humble-t
 source /opt/ros/humble/setup.bash
 ```
 
-没有检出仓库时先克隆；已有检出目录则直接进入它：
+Clone the repository if you do not already have a checkout; otherwise enter the existing directory:
 
 ```bash
 git clone https://github.com/CXRISME/CHATGPT.git
 cd CHATGPT
 ```
 
-在根目录执行：
+From the repository root:
 
 ```bash
 cp config/robot.env.example config/robot.env
-# 编辑 robot.env，确认型号和实验室通信域后加载
+# Edit robot.env and confirm the model and lab communication domain before sourcing.
 source config/robot.env
 rosdep update
 rosdep install --from-paths src --ignore-src -r -y
@@ -46,24 +46,24 @@ source install/setup.bash
 ros2 launch maze_slam_bringup mapping.launch.py --show-args
 ```
 
-如果 `rosdep update` 提示尚未初始化，先执行一次 `sudo rosdep init`。每个新终端重新加载 ROS2、工作空间及环境文件。导航依赖在后续阶段安装，本次只需地图保存工具。
+If `rosdep update` reports that rosdep has not been initialised, run `sudo rosdep init` once first. Source the ROS2, workspace and environment files again in every new terminal. Navigation dependencies will be installed in a later stage; this stage only needs the map-saving tool.
 
-## 3. 树莓派驱动与通信
+## 3. Raspberry Pi Drivers and Communication
 
-按 ROBOTIS 官方手册中 **Humble** 对应页完成树莓派驱动、雷达与 OpenCR 配置。电脑与树莓派使用匹配的 ROS2 环境、相同通信域，确认网络可通信与时间同步。环境示例可在两端手动设置，不必在树莓派编译本项目。
+Follow the **Humble** section of the ROBOTIS manual to configure Raspberry Pi drivers, LiDAR and OpenCR. Use compatible ROS2 environments and the same communication domain on both machines. Check network communication and clock synchronisation. You can set the example environment variables manually on both machines; building this project on the Raspberry Pi is not required.
 
-若硬件确为标准 TurtleBot3 Burger 且驱动已安装，在树莓派终端：
+If the hardware is a standard TurtleBot3 Burger and its drivers are installed, run this in a Raspberry Pi terminal:
 
 ```bash
 source /opt/ros/humble/setup.bash
 export TURTLEBOT3_MODEL=burger
-# ROS_DOMAIN_ID / ROS_LOCALHOST_ONLY 与电脑核实为一致
+# Confirm ROS_DOMAIN_ID / ROS_LOCALHOST_ONLY match the PC settings.
 ros2 launch turtlebot3_bringup robot.launch.py
 ```
 
-若实验室已有启动方式，先核实它提供的接口，不同时启动两套底盘驱动。
+If the lab already has a bringup procedure, confirm its interfaces first. Run only one set of base drivers.
 
-在电脑另一个已加载环境的终端，检查而不发送运动指令：
+In another PC terminal with the environment loaded, check the interfaces without sending motion commands:
 
 ```bash
 ros2 node list
@@ -75,42 +75,42 @@ ros2 topic echo /odom --once
 ros2 run tf2_ros tf2_echo odom base_footprint
 ```
 
-`topic hz` 和 `tf2_echo` 持续运行，用 Ctrl+C 退出。记录扫描频率、雷达 frame_id 及时间戳；再检查 `base_footprint` 到实际雷达 frame_id 的 TF。话题或 frame 不同则先修正说明与配置。质量服务（Quality of Service, QoS）不匹配可能导致可见话题却收不到数据，应核对订阅与发布端。
+`topic hz` and `tf2_echo` run continuously; stop each with Ctrl+C before proceeding. Record the scan frequency, laser frame ID and timestamps. Then check TF from `base_footprint` to the actual laser frame ID. If topics or frames differ, update the documentation and configuration first. A Quality of Service (QoS) mismatch can prevent reception even when a topic is visible; compare publisher and subscriber settings.
 
-**通过条件：** 收到持续扫描和里程计，TF 链连通，没有持续时间戳／变换错误。未通过时先排查，不继续调 SLAM。
+**Acceptance criteria:** continuous scans and odometry, a connected TF chain, and no persistent timestamp or transform errors. Resolve failures before tuning SLAM.
 
-## 4. 首次实机建图
+## 4. First Mapping Run on the Physical Robot
 
-保持机器人驱动运行，在电脑启动：
+Keep the robot drivers running and launch this on the PC:
 
 ```bash
 ros2 launch maze_slam_bringup mapping.launch.py use_sim_time:=false
 ```
 
-另一个终端执行 `rviz2`，设置固定坐标系（Fixed Frame）为 `map`，添加 Map、LaserScan 和 TF。Map 显示订阅 `/map`，必要时将持久性（Durability）设为 `Transient Local`。
+Run `rviz2` in another terminal. Set the Fixed Frame to `map` and add Map, LaserScan and TF displays. Subscribe the Map display to `/map`; set Durability to `Transient Local` if needed.
 
-先原地观察地图和扫描。风险评估（Risk Assessment）获批、现场允许且停机方式确认后，才使用与已装驱动匹配的遥控（Teleoperation）低速移动；本骨架不自动开动机器人。通过走过可识别的墙角、返回起点，观察回环后地图是否合理。
+First observe the map and scans while stationary. Once the risk assessment is approved, movement is permitted on site and the stopping procedure is confirmed, use teleoperation compatible with the installed driver to move slowly. This scaffold does not move the robot automatically. Pass recognisable corners and return to the starting point to inspect the map after loop closure.
 
-启动建图前可先录制（每次使用新的输出目录）：
+You can begin recording before launching mapping; use a new output directory for each run:
 
 ```bash
 ros2 bag record -o bags/YYYYMMDD_maze01_run01 /scan /odom /tf /tf_static
 ```
 
-录制完成按 Ctrl+C，执行 `ros2 bag info bags/YYYYMMDD_maze01_run01` 检查实际消息数量、时间范围和静态 TF 是否录入；有录包目录不代表数据有效。仿真录制另加 `--use-sim-time` 并记录 `/clock`。后续回放使用独立会话，停止实机驱动和其他时间源，`ros2 bag play <录包路径> --clock`，SLAM 使用 `use_sim_time:=true`；先确认回放包含所需 TF。
+Stop recording with Ctrl+C. Run `ros2 bag info bags/YYYYMMDD_maze01_run01` to check message counts, the time range and whether static TF was recorded. A recording directory alone does not prove valid data. For simulation, also pass `--use-sim-time` and record `/clock`. Replay in a separate session with physical drivers and other clock sources stopped: use `ros2 bag play <bag_path> --clock` and launch SLAM with `use_sim_time:=true`. Confirm the recording contains the required TF first.
 
-地图已出现时，在仓库根目录另一个终端保存：
+Once a map is available, save it from another terminal at the repository root:
 
 ```bash
 ros2 run nav2_map_server map_saver_cli -f "$PWD/maps/YYYYMMDD_maze01_run01"
 ```
 
-核实生成的 YAML 和图像配对、图像路径可解析，并查看墙与通道；没有实际保存前，不填写“成功”。复制 `experiments/TEMPLATE.md` 到新的实验记录，填入命令、参数版本、证据和失败原因。
+Verify the YAML and image form a valid pair, the image path resolves, and walls and passages are represented. Record success only after actually saving and checking the files. Copy `experiments/TEMPLATE.md` into a new experiment record and fill in commands, parameter versions, evidence and failure reasons.
 
-## 官方参考
+## Official References
 
-- [ROS2 Humble 安装](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
-- [TurtleBot3 Bringup：选择 Humble](https://emanual.robotis.com/docs/en/platform/turtlebot3/bringup/)
-- [SLAM Toolbox Humble 启动入口](https://github.com/SteveMacenski/slam_toolbox/blob/humble/launch/online_async_launch.py)
+- [ROS2 Humble installation](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
+- [TurtleBot3 bringup: select Humble](https://emanual.robotis.com/docs/en/platform/turtlebot3/bringup/)
+- [SLAM Toolbox Humble launch entry point](https://github.com/SteveMacenski/slam_toolbox/blob/humble/launch/online_async_launch.py)
 - [rosbag2](https://github.com/ros2/rosbag2/tree/humble)
-- [Nav2 建图与地图保存](https://docs.nav2.org/tutorials/docs/navigation2_with_slam.html)
+- [Nav2 mapping and map saving](https://docs.nav2.org/tutorials/docs/navigation2_with_slam.html)

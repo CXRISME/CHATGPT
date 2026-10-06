@@ -1,28 +1,28 @@
-# 下一步开发入口（Development Roadmap）
+# Development Roadmap
 
-以下是待办项，不是已完成记录。当前只具备骨架与启动包装。按前置条件推进：
+These are pending tasks, not completed results. The current repository provides a scaffold and a launch wrapper. Follow the prerequisites in order:
 
-| 阶段 | 下一次具体工作 | 验收证据 |
+| Stage | Next concrete task | Acceptance evidence |
 | --- | --- | --- |
-| 0 环境 | 核实电脑／树莓派系统、雷达、驱动、通信域和 TF | 实验记录 + `/scan`、`/odom` 和 TF 输出 |
-| 1 建图 | 使用现有驱动与本包建图，固化首个 SLAM 参数文件 | 可加载的 YAML/地图图像、录包索引、RViz 截图 |
-| 2 地图质量 | 固定迷宫及行驶路线，对基线重复实验；一次只改一个参数 | 实测墙距与地图墙距、回环前后图、全部成功与失败记录 |
-| 3 定位 | 安装匹配版本 Nav2，关闭建图 SLAM，接入地图服务和 AMCL | 已知起点初始化后，机器人移动时位置更新，`map → odom` 唯一发布者 |
-| 4 导航 | 新增 `navigation.launch.py` 与已核实的 Nav2 参数，配置底盘轮廓、速度、障碍物层 | 指定起点／终点，能规划可行路线并实际到达，记录失败与碰撞 |
-| 5 FYP 分析 | 在固定条件下重复导航实验，汇总地图／定位／导航指标 | 与代码 SHA、地图、参数、数据逐项关联的报告 |
+| 0: Environment | Confirm PC/Pi systems, LiDAR, drivers, communication domain and TF | Experiment record plus `/scan`, `/odom` and TF outputs |
+| 1: Mapping | Map using the existing drivers and this package; capture the first SLAM parameter file | Loadable YAML/image pair, recording index and RViz screenshots |
+| 2: Map quality | Repeat the baseline with a fixed maze and route; change one parameter at a time | Measured versus mapped wall distances, before/after loop closure images, all successful and failed runs |
+| 3: Localisation | Install matching Nav2 packages, stop mapping SLAM, and integrate the map server and AMCL | Pose updates during movement after initialisation at a known start, with a single `map → odom` publisher |
+| 4: Navigation | Add `navigation.launch.py` and verified Nav2 parameters; configure robot footprint, speed and obstacle layers | A feasible route between specified start/goal positions and actual arrival; record failures and collisions |
+| 5: FYP analysis | Repeat navigation experiments under fixed conditions and summarise mapping/localisation/navigation metrics | A report linked to code SHAs, maps, parameters and data |
 
-## 代码从哪里改
+## Where to Extend the Code
 
-- 当前入口：`src/maze_slam_bringup/launch/mapping.launch.py`。它包装上游 SLAM 启动文件，不改写 SLAM 算法。
-- 首次参数固化：按 `config/README.md` 生成完整 `config/slam_baseline.yaml`。
-- 导航配置可随包放到 `src/maze_slam_bringup/config/`；届时在 `CMakeLists.txt` 增加该目录的安装规则，并在 `package.xml` 声明实际依赖。
-- 后续如需自定义实验采集节点，单独创建 ROS2 包放入 `src/`，保持启动与算法／采集职责分开。
-- 每次开发先写清输入、期望输出和验收条件，再记录运行结果。没有实机证据时标为“未验证”。
+- Current entry point: `src/maze_slam_bringup/launch/mapping.launch.py`. It wraps the upstream SLAM launch file without changing the SLAM algorithm.
+- First parameter baseline: follow `config/README.md` to create a complete `config/slam_baseline.yaml`.
+- Future navigation configuration can live in `src/maze_slam_bringup/config/`. Add installation rules for that directory to `CMakeLists.txt` and declare the actual dependencies in `package.xml` when introducing it.
+- If custom experiment acquisition nodes are needed, create a separate ROS2 package under `src/` to keep bringup separate from algorithms and data collection.
+- Define inputs, expected outputs and acceptance criteria before each development step, then record the observed results. Mark items without physical evidence as unverified.
 
-## 指标如何定义
+## Defining Metrics
 
-地图误差（Map Error）可从固定墙段长度开始，给出测量方法、单位及误差；定位误差（Localisation Error）需要独立参考位置，不能把里程计当作真实值（Ground Truth）。没有参考定位设备时明确只做定性观察或已知测量点比较。
+Start map error measurements with fixed wall segment lengths, stating the method, units and errors. Localisation error requires an independent reference position; odometry is not ground truth. Without reference positioning equipment, report qualitative observations or comparisons at known measured points and state the limitation.
 
-导航成功率（Navigation Success Rate）为符合预先定义到达条件的次数／总尝试次数；提前写明位置容差、时间上限和碰撞判定，同时记录耗时、路径长度与失败原因。重复次数及阈值在实验前确定，不为美化结果排除失败运行。
+Navigation success rate is the number of attempts meeting predefined arrival criteria divided by all attempts. Define position tolerances, time limits and collision criteria in advance. Also record elapsed time, path length and failure reasons. Choose repetition counts and thresholds before experiments, and retain failed runs.
 
-自主探索未知迷宫属于额外功能，需要前沿探索（Frontier Exploration）等策略；当前目标先是手动建图和在已知地图上的导航，不将两者混为一项已实现能力。
+Autonomous exploration of an unknown maze is an additional feature requiring a strategy such as frontier exploration. The initial scope is manual mapping followed by navigation in a known map; neither stage demonstrates autonomous exploration by itself.

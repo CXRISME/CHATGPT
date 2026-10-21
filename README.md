@@ -19,8 +19,10 @@ approved overwriting Disk 3. **Image writing, readback verification and separate
 first-boot seed inspection have passed.** H: now contains the `system-boot`
 FAT32 partition, with a second Linux partition also present. The first-boot seed
 specifies `ubuntu`, hostname `tb3-burger`, SSH public-key access,
-`en_GB.UTF-8` and `Europe/London`. Ethernet DHCP is prepared. The owner selected
-an iPhone hotspot for first boot; private Wi-Fi configuration is the next step.
+`en_GB.UTF-8` and `Europe/London`. The owner selected an iPhone hotspot; its
+private Wi-Fi seed has now been saved and read back successfully with country
+GB. The next step is to confirm the power arrangement, then perform first boot
+and test the actual network connection. No hotspot credentials are published.
 SSH, robot bringup, sensor topics, motion, mapping, localisation and navigation
 are **Pending / To be tested**.
 

@@ -16,8 +16,10 @@ confirmed that the H: microSD card has no data requiring preservation.
 The owner subsequently explicitly authorised overwriting the entire Disk 3
 (H:, approximately 64 GB) with Ubuntu Server 22.04.5 64-bit.
 **Step 2 image writing, readback verification and separate boot-seed inspection
-have passed.** The owner selected an iPhone hotspot for first boot; private
-Wi-Fi configuration remains pending. No robot firmware update, first boot,
+have passed.** The owner selected an iPhone hotspot, entered credentials in a
+local masked form, and its Wi-Fi seed passed separate file readback checks.
+Power arrangements and actual hotspot association still require checking.
+No robot firmware update, first boot,
 SSH connection or motion test has been performed.
 
 Each step will be completed and its actual output checked before the next step.
@@ -260,7 +262,7 @@ running Raspberry Pi:
 | Local password | Locked initially; key-based SSH is the intended access method | No console-password login configured |
 | Administrator access | `ubuntu` has sudo access for setup | Pending first boot |
 | Ethernet | `eth0`, DHCP, optional interface | Prepared fallback; iPhone Wi-Fi selected for first boot |
-| Wi-Fi | Regulatory country GB confirmed; no SSID/password supplied | Not configured yet |
+| Wi-Fi | iPhone hotspot credentials stored privately; `wlan0`, DHCP, country GB | Seed checked in Step 3; association pending |
 
 A dedicated key pair was created by Windows OpenSSH at
 `C:\Users\LENOVO\.ssh\id_ed25519_tb3_burger` and its `.pub` companion. The private
@@ -271,8 +273,8 @@ checkout under the user's profile. No credentials or keys are committed.
 The local `user-data` uses Ubuntu cloud-init to create the user, configure the
 hostname, locale and timezone, authorise the public key, and enable the SSH
 service on first boot. Updates are deferred until the network and SSH work.
-`network-config` currently enables Ethernet DHCP only. Wi-Fi setup must be
-completed before first boot if Ethernet will not be available.
+At image-write completion, `network-config` enabled Ethernet DHCP only. Step 3
+subsequently added the private iPhone Wi-Fi configuration before first boot.
 
 The official image manifest lists cloud-init `24.2-0ubuntu1~22.04.1`, netplan.io
 `0.106.1-7ubuntu0.22.04.4`, and openssh-server `1:8.9p1-3ubuntu0.10`.
@@ -335,7 +337,7 @@ Sources: [Imager 2.0.6 CLI](https://github.com/raspberrypi/rpi-imager/blob/v2.0.
 | Boot files | `config.txt`, `cmdline.txt`, `vmlinuz`, `initrd.img`, Pi 4 device tree, and all three cloud-init seed files present |
 | `user-data` readback | Matches the prepared seed after normalising line endings and duplicate `#cloud-config` header comments |
 | SSH public key | Matches the dedicated PC public key; private key never copied to the SD card |
-| `network-config` readback | Matches the prepared Ethernet-DHCP-only seed |
+| `network-config` readback | At image-write completion, matched the Ethernet-DHCP-only seed; Wi-Fi added and checked separately in Step 3 |
 | Running Ubuntu / SSH login | **Pending / To be tested** |
 
 The readback verifies the written image, not every byte of the nominal 64 GB
@@ -357,18 +359,80 @@ mounted FAT32 boot volume. Separate local comparisons checked the seed text and
 public key without printing their contents. First-boot execution has not been
 tested merely by inspecting these files.
 
-**Next action:** complete private Wi-Fi configuration for the selected iPhone
-hotspot before ejecting the card. Both the PC and Raspberry Pi will join that
+The owner selected an iPhone hotspot. Both the PC and Raspberry Pi will join that
 same hotspot; peer connectivity and SSH still require testing. On an iPhone
 that offers Maximise Compatibility, that mode provides 2.4 GHz / WPA2 Personal
-for this initial connection. The card stays in the PC until its Wi-Fi seed is
-ready. See [Apple's hotspot compatibility explanation](https://support.apple.com/guide/security/wi-fi-security-with-apple-devices-secfd166f620/web).
+for this initial connection. The Wi-Fi seed is now saved and checked, as recorded
+below. See [Apple's hotspot compatibility explanation](https://support.apple.com/guide/security/wi-fi-security-with-apple-devices-secfd166f620/web).
 
 If Ethernet is used as an alternative, the later sequence is to
 safely eject the card, insert it with the Raspberry Pi powered off, connect the
 Pi to the same router/LAN as the PC, then power it using a verified suitable
 power arrangement. If Ethernet is unavailable, complete the private Wi-Fi seed
-first. Do not infer Wi-Fi readiness from the successful image write.
+first. Do not infer a working Wi-Fi connection from a successful image write.
+
+## Step 3 — iPhone Hotspot Seed Saved; First Boot Pending
+
+The owner entered the hotspot name and password manually in a local masked
+Tkinter form. Before changing `H:\network-config`, the helper checked pinned
+fingerprints of the approved card's `meta-data` and `user-data`. It backed up
+the earlier Ethernet-only seed outside the repository, saved the new UTF-8
+configuration, flushed it, and compared the SD file with the local private copy.
+The owner reported the save/readback success message; a separate local check
+confirmed the file match, valid credential fields, networkd renderer, country GB,
+and unchanged user/SSH metadata. Credential values were not printed or committed.
+
+The following is a **sanitised example**, not the actual hotspot credentials:
+
+```yaml
+version: 2
+renderer: networkd
+ethernets:
+  eth0:
+    dhcp4: true
+    optional: true
+wifis:
+  wlan0:
+    dhcp4: true
+    optional: true
+    regulatory-domain: GB
+    access-points:
+      "<HOTSPOT_SSID>":
+        password: "<HOTSPOT_PASSWORD>"
+```
+
+`dhcp4` requests an address from the hotspot. `optional` allows boot to finish
+without waiting indefinitely for an absent interface. The access point entry
+provides the private WPA/WPA2 credential, and `regulatory-domain` selects GB.
+The image includes Netplan 0.106 and wpa_supplicant; the networkd backend supports
+these settings. Cloud-init 24.2 passes this version-2 seed through to Netplan.
+
+The local helper was opened with:
+
+```powershell
+Start-Process -FilePath 'C:\Users\LENOVO\AppData\Local\Programs\Python\Python312\pythonw.exe' -ArgumentList 'C:\Users\LENOVO\.tb3-burger\wifi_setup.py' -WindowStyle Normal
+```
+
+This opens the local form for human credential entry. The helper and real
+configuration stay outside the GitHub checkout. No screenshot or UI-text capture
+was used to collect the credentials. Independent inspection printed boolean
+results only, including `SDSeedReadbackPassed: true`, `CountryGB: true`, and
+`OriginalUserAndMetadataUnchanged: true`.
+
+**Acceptance:** private seed saved and read back — **Passed**. Raspberry Pi boot,
+hotspot association, PC-to-Pi reachability and SSH login — **Pending / To be tested**.
+Both devices must join the same hotspot; client-to-client access must be tested.
+Later package downloads will consume the hotspot's mobile data.
+
+**Next action:** confirm the Pi's actual power arrangement before first boot.
+The owner reports that the current power arrangement is unclear; a clear photo
+of the Pi/OpenCR power wiring is needed before giving power-on instructions.
+Keep the SD card in the PC until that check is complete. After safe ejection,
+insert the card only while the Raspberry Pi is powered off. Power-on and network
+checks will then proceed as a separate step; no motion commands are involved.
+
+References: [cloud-init 24.2 Netplan passthrough](https://docs.cloud-init.io/en/24.2/reference/network-config-format-v2.html#netplan-passthrough),
+[Netplan 0.106 Wi-Fi settings](https://netplan.readthedocs.io/en/0.106/netplan-yaml/#properties-for-device-type-wifis).
 
 ## Configuration Record — Runtime Verification Pending
 
@@ -377,7 +441,7 @@ first. Do not infer Wi-Fi readiness from the successful image write.
 | Ubuntu | Server 22.04, ARM64 | Pending |
 | Image filename, source and checksum | Official Pi ARM64 Server 22.04.5 image | Downloaded; SHA256 comparison passed above |
 | Username and hostname | `ubuntu` / `tb3-burger` | Prepared in seed; first boot pending |
-| Wi-Fi | Country GB confirmed; iPhone hotspot selected; credentials entered locally | Private seed preparation pending |
+| Wi-Fi | Country GB; iPhone credentials entered locally | SD seed saved and checked; association pending |
 | SSH | Dedicated PC key and public-key first-boot seed prepared | Runtime and remote login pending |
 | Locale | `en_GB.UTF-8` | Prepared in seed; runtime pending |
 | Timezone and clock sync | `Europe/London` confirmed | Timezone seed prepared; clock sync pending |
@@ -402,7 +466,7 @@ Commands will be added in small, checked steps as hardware is confirmed.
 | Step | Stage | Evidence required before advancing | Status |
 | --- | --- | --- | --- |
 | 2 | Image preparation and approved write | Compatible board, verified image, explicit disk approval, successful write verification | Passed; boot seeds checked separately |
-| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Pending |
+| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Wi-Fi seed checked; power, first boot and SSH pending |
 | 4 | Ubuntu baseline | Updates, username, hostname, UTF-8 locale, timezone and clock sync verified | Pending |
 | 5 | ROS 2 Humble | Correct repositories/architecture, working CLI and checked shell environment | Pending |
 | 6 | Robot components | Compatible TurtleBot3, DYNAMIXEL/OpenCR and LiDAR software; device access verified | Pending |

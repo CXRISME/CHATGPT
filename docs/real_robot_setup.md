@@ -18,7 +18,9 @@ The owner subsequently explicitly authorised overwriting the entire Disk 3
 **Step 2 image writing, readback verification and separate boot-seed inspection
 have passed.** The owner selected an iPhone hotspot, entered credentials in a
 local masked form, and its Wi-Fi seed passed separate file readback checks.
-Power arrangements and actual hotspot association still require checking.
+The owner visually traced the existing power cable from the OpenCR connector
+labelled 5V/GND to Pi physical pins 4/6 respectively. This cable check is
+complete; actual power stability and hotspot association remain untested.
 No robot firmware update, first boot,
 SSH connection or motion test has been performed.
 
@@ -145,7 +147,8 @@ only; first re-identify H: if the card is reconnected or a write is proposed.
 | OpenCR control board | Exact board revision and installed firmware unknown | Pending label and later USB/firmware checks |
 | Left and right DYNAMIXEL motors | Models, IDs and baud rate unknown | Pending labels and later communication checks |
 | LiDAR | Model and interface unknown | Pending label; do not infer from Burger |
-| Power and cabling | Battery condition, power path and USB cables unverified | Pending physical inspection |
+| Camera | Owner reports a camera module connected to a Pi USB 2 port; model unknown | Connection reported; detection and driver checks pending |
+| Power and cabling | Owner reports an 11.1 V battery connected to OpenCR; visually traced its labelled 5V output to Pi physical pin 4 and GND to pin 6; Pi USB-C unconnected | Existing cable endpoints/polarity confirmed by owner; no meter or load test; board revision, battery condition and power stability pending |
 
 Keep robot power off while handling the microSD card or inspecting cabling.
 The owner supplied the Raspberry Pi model and confirmed no card data needs
@@ -424,12 +427,61 @@ hotspot association, PC-to-Pi reachability and SSH login — **Pending / To be t
 Both devices must join the same hotspot; client-to-client access must be tested.
 Later package downloads will consume the hotspot's mobile data.
 
-**Next action:** confirm the Pi's actual power arrangement before first boot.
-The owner reports that the current power arrangement is unclear; a clear photo
-of the Pi/OpenCR power wiring is needed before giving power-on instructions.
-Keep the SD card in the PC until that check is complete. After safe ejection,
-insert the card only while the Raspberry Pi is powered off. Power-on and network
-checks will then proceed as a separate step; no motion commands are involved.
+### Power-cable inspection — owner-confirmed endpoints
+
+On 21 October 2026, the owner reported that the Pi's two USB 2 ports connect to
+OpenCR and a camera module, its USB-C port has no cable, and OpenCR is connected
+to an 11.1 V battery. The supplied images are reference diagrams, not evidence
+of the actual board revision or wiring. The owner subsequently found a separate
+power cable on the Pi header and confirmed its existing connections:
+
+| Supply endpoint | Raspberry Pi endpoint | Evidence |
+| --- | --- | --- |
+| OpenCR connector labelled `5V` | Physical header pin 4, the 5 V rail | Owner visually traced the cable |
+| OpenCR connector labelled `GND` | Physical header pin 6, ground | Owner visually traced the cable |
+
+These are **physical header numbers**, not BCM GPIO4 and GPIO6. The existing
+GPIO power path explains why USB-C is unconnected; an additional USB-C supply
+is not needed for this first-boot attempt. No cable changes were requested.
+The USB connection to OpenCR is separate from this power cable. Do not connect
+the 11.1 V battery or an OpenCR 12 V output directly to the Pi or rely on USB
+back-powering.
+
+**Acceptance:** cable source label and endpoint polarity — **Confirmed by the
+owner's visual inspection**. This is not a voltage measurement or load test.
+OpenCR's exact board revision and installed firmware remain unknown. Power
+stability, battery state and actual Ubuntu boot remain **Pending / To be tested**.
+Identify the board before selecting any version-dependent firmware operation;
+no firmware write has been performed.
+
+Sources: [Raspberry Pi power requirements and USB back-powering](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#power-supply),
+[Pi 4 official datasheet, GPIO connector pinout](https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf),
+[ROBOTIS separate SBC power-cable guidance](https://emanual.robotis.com/docs/en/platform/turtlebot3/compatible_devices/#power-supply).
+
+### Next action — first boot, not yet performed
+
+1. Turn on the already-configured iPhone hotspot, enable Allow Others to Join
+   and Maximise Compatibility if available, and keep its hotspot settings open
+   while connecting. Keep the saved hotspot name and password unchanged. Connect
+   the Windows PC to the same hotspot.
+2. Safely eject the H: `system-boot` microSD card using Windows' removable-device
+   controls. Wait for safe-removal confirmation before removing it. If Windows
+   reports that the card is in use, resolve that before unplugging the reader.
+3. With the robot and Pi powered off, insert the card into the Pi's microSD slot.
+   Retain the confirmed existing GPIO power cable and leave USB-C unconnected.
+4. Place the robot on a clear, level floor, keep its power switch accessible,
+   and turn on the existing OpenCR power switch. Do not press motor-test buttons
+   or run any movement command.
+5. Allow about five minutes for initial boot and cloud-init; do not interrupt
+   an active first boot. Report the Pi's power/activity LEDs and any visible
+   errors before proceeding to network discovery and SSH.
+
+This is the next procedure, not a completed test. A lit power LED or an extra
+hotspot client alone will not prove that Ubuntu, cloud-init or SSH succeeded.
+First boot, actual network access and SSH still require direct verification.
+
+Sources: [Ubuntu Raspberry Pi first boot and cloud-init](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#4-boot-ubuntu-server),
+[Apple Personal Hotspot connection procedure](https://support.apple.com/en-gb/111785).
 
 References: [cloud-init 24.2 Netplan passthrough](https://docs.cloud-init.io/en/24.2/reference/network-config-format-v2.html#netplan-passthrough),
 [Netplan 0.106 Wi-Fi settings](https://netplan.readthedocs.io/en/0.106/netplan-yaml/#properties-for-device-type-wifis).
@@ -466,7 +518,7 @@ Commands will be added in small, checked steps as hardware is confirmed.
 | Step | Stage | Evidence required before advancing | Status |
 | --- | --- | --- | --- |
 | 2 | Image preparation and approved write | Compatible board, verified image, explicit disk approval, successful write verification | Passed; boot seeds checked separately |
-| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Wi-Fi seed checked; power, first boot and SSH pending |
+| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Wi-Fi seed checked; power cable visually traced by owner; first boot and SSH pending |
 | 4 | Ubuntu baseline | Updates, username, hostname, UTF-8 locale, timezone and clock sync verified | Pending |
 | 5 | ROS 2 Humble | Correct repositories/architecture, working CLI and checked shell environment | Pending |
 | 6 | Robot components | Compatible TurtleBot3, DYNAMIXEL/OpenCR and LiDAR software; device access verified | Pending |

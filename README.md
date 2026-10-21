@@ -21,8 +21,11 @@ FAT32 partition, with a second Linux partition also present. The first-boot seed
 specifies `ubuntu`, hostname `tb3-burger`, SSH public-key access,
 `en_GB.UTF-8` and `Europe/London`. The owner selected an iPhone hotspot; its
 private Wi-Fi seed has now been saved and read back successfully with country
-GB. The next step is to confirm the power arrangement, then perform first boot
-and test the actual network connection. No hotspot credentials are published.
+GB. The owner visually traced the existing OpenCR connector labelled 5V/GND to
+Pi physical pins 4/6 respectively. This confirms the reported cable path, not
+power stability or a running system. OpenCR's exact board revision and firmware
+remain unknown. The next step is first boot and actual network verification.
+No hotspot credentials are published.
 SSH, robot bringup, sensor topics, motion, mapping, localisation and navigation
 are **Pending / To be tested**.
 

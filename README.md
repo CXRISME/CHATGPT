@@ -10,12 +10,17 @@ It records hardware identification, SD-card preparation, Ubuntu, networking and
 SSH, ROS 2, robot drivers, and the evidence required before movement and SLAM.
 
 **Current progress (21 October 2026):** the Windows PC and H: microSD card have
-been inspected using read-only commands. H: currently maps to physical Disk 3
-(USB reader, approximately 64 GB, one exFAT partition). The owner confirmed a
+been inspected using read-only commands. Before imaging, H: mapped to physical
+Disk 3 (USB reader, approximately 64 GB, one exFAT partition). The owner confirmed a
 Raspberry Pi 4 Model B and no card data requiring preservation. Step 1 is
 complete. The official Ubuntu 22.04.5 Raspberry Pi ARM64 Server image has been
-downloaded to the PC and matches the published SHA256 checksum. Explicit
-disk-write approval is still required. No image has been written to the SD card.
+downloaded to the PC and matches the published SHA256 checksum. The owner
+approved overwriting Disk 3. **Image writing, readback verification and separate
+first-boot seed inspection have passed.** H: now contains the `system-boot`
+FAT32 partition, with a second Linux partition also present. The first-boot seed
+specifies `ubuntu`, hostname `tb3-burger`, SSH public-key access,
+`en_GB.UTF-8` and `Europe/London`. Ethernet DHCP is prepared. The owner selected
+an iPhone hotspot for first boot; private Wi-Fi configuration is the next step.
 SSH, robot bringup, sensor topics, motion, mapping, localisation and navigation
 are **Pending / To be tested**.
 

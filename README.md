@@ -13,7 +13,9 @@ SSH, ROS 2, robot drivers, and the evidence required before movement and SLAM.
 been inspected using read-only commands. H: currently maps to physical Disk 3
 (USB reader, approximately 64 GB, one exFAT partition). The owner confirmed a
 Raspberry Pi 4 Model B and no card data requiring preservation. Step 1 is
-complete; explicit disk-write approval is still required. No image has been written.
+complete. The official Ubuntu 22.04.5 Raspberry Pi ARM64 Server image has been
+downloaded to the PC and matches the published SHA256 checksum. Explicit
+disk-write approval is still required. No image has been written to the SD card.
 SSH, robot bringup, sensor topics, motion, mapping, localisation and navigation
 are **Pending / To be tested**.
 

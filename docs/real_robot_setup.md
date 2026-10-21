@@ -19,7 +19,8 @@ No destructive SD-card operation has been authorised.
 
 Each step will be completed and its actual output checked before the next step.
 When a command fails, preserve its output and diagnose that failure before
-considering a reinstall. All later stages below are **Pending / To be tested**.
+considering a reinstall. Step 2 image preparation is complete; SD writing and
+all robot stages remain **Pending / To be tested**.
 
 ## Repository Baseline and Preservation
 
@@ -165,7 +166,7 @@ Drive letters and disk numbers can change. The snapshot above is **not**
 permission to write Disk 3 later. Never target Disk 0 or Disk 1. No formatting,
 partition deletion or image writing may occur before the write gate is satisfied.
 
-## Next Image — Compatible Candidate, Not Written
+## Step 2 — Image Prepared and Verified; SD Write Pending Approval
 
 For a compatible Raspberry Pi, ROBOTIS's Humble SBC instructions specify
 **Ubuntu Server 22.04.5 LTS (64-bit)**. The official Raspberry Pi preinstalled
@@ -175,24 +176,61 @@ server image is:
 ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz
 ```
 
-This is a candidate, not a downloaded, checksum-verified or written image.
 The owner-confirmed Pi 4 Model B is compatible with this baseline.
 Canonical's compatibility matrix lists 22.04 support for Pi 3B/3B+/4B, among
 other models, but not Pi 5. A Pi 5 would require resolving the hardware/baseline
-conflict before proceeding. Image selection,
-SHA256 verification, Imager settings, write verification and first boot will be
-recorded when performed.
+conflict before proceeding. Imager settings, SD write verification and first
+boot remain pending.
 
 Sources: [ROBOTIS SBC setup, Humble section](https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/),
 [Canonical Raspberry Pi compatibility](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/),
 [official Ubuntu 22.04 images](https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/).
+
+### Verified download result — 21 October 2026
+
+The official compressed image and its published checksum list were downloaded
+over HTTPS into `E:\ChatGPT\FYP\robot-images`, outside the GitHub checkout.
+No raw disk was opened for writing. The image binary is not committed to Git.
+
+| Item | Actual result |
+| --- | --- |
+| File | `ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz` |
+| Downloaded size | `1,038,926,560` bytes, matching the server's Content-Length |
+| SHA256 | `fd7687c5c9422a6c7ba4717c227bf6473fe4e0c954d5a9f664201dcecc63e822` |
+| Official checksum comparison | **Passed**; exactly matches the image's entry in `SHA256SUMS` |
+| Image written to SD | **Pending owner approval** |
+| Imager write verification / first boot | **Pending / To be tested** |
+
+Sources: [image download](https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz)
+and [published SHA256SUMS](https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/SHA256SUMS).
+This records a SHA256 comparison with the official HTTPS checksum list, not a
+separate GPG-signature verification.
+
+The download used `curl.exe --fail --location` with an ordinary output file:
+
+```powershell
+curl.exe --fail --location --output 'E:\ChatGPT\FYP\robot-images\ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz' 'https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz'
+curl.exe --fail --location --output 'E:\ChatGPT\FYP\robot-images\SHA256SUMS' 'https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/SHA256SUMS'
+Get-FileHash -LiteralPath 'E:\ChatGPT\FYP\robot-images\ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz' -Algorithm SHA256
+```
+
+`curl.exe` downloads the image and checksum list; `--fail` rejects HTTP errors
+and `--location` follows redirects. `Get-FileHash` reads the downloaded file and
+calculates its SHA256. The actual hash was compared programmatically with the
+single matching official entry; a mismatch would stop image preparation.
+Do not rerun a download over an existing verified file unnecessarily.
+
+A fresh read-only check after checksum verification still mapped H: to Disk 3,
+USB, `62,534,975,488` bytes, with `IsBoot=False` and `IsSystem=False`.
+This check is not write permission. The exact physical target must still be
+confirmed by the owner and rechecked before any destructive operation.
 
 ## Configuration Record — Not Applied Yet
 
 | Setting | Planned requirement / value | Actual result |
 | --- | --- | --- |
 | Ubuntu | Server 22.04, ARM64 | Pending |
-| Image filename, source and checksum | Record verified image before writing | Pending |
+| Image filename, source and checksum | Official Pi ARM64 Server 22.04.5 image | Downloaded; SHA256 comparison passed above |
 | Username and hostname | Agree with owner before first-boot configuration | Pending |
 | Wi-Fi | Confirm SSID, authentication type and regulatory country locally | Pending |
 | SSH | Enable and verify Windows-to-Pi login and host identity | Pending |
@@ -218,7 +256,7 @@ Commands will be added in small, checked steps as hardware is confirmed.
 
 | Step | Stage | Evidence required before advancing | Status |
 | --- | --- | --- | --- |
-| 2 | Image preparation and approved write | Compatible board, verified image, explicit disk approval, successful write verification | Pending |
+| 2 | Image preparation and approved write | Compatible board, verified image, explicit disk approval, successful write verification | Image verified; SD write pending approval |
 | 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Pending |
 | 4 | Ubuntu baseline | Updates, username, hostname, UTF-8 locale, timezone and clock sync verified | Pending |
 | 5 | ROS 2 Humble | Correct repositories/architecture, working CLI and checked shell environment | Pending |

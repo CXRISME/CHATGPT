@@ -28,6 +28,11 @@ SSH login have now been verified, with the SSH connection checked again on
 passed; package updates remain pending. No robot firmware update, ROS 2
 installation or motion test has been performed.
 
+The owner subsequently selected the existing VirtualBox workstation guest.
+Its terminal screenshot confirms Ubuntu 22.04.5 LTS and `x86_64`. See the
+[Ubuntu VM handoff](ubuntu_vm_handoff.md) for verified state and the next
+installation step. Codex CLI installation and VM-to-Pi access remain pending.
+
 Each step will be completed and its actual output checked before the next step.
 When a command fails, preserve its output and diagnose that failure before
 considering a reinstall. Step 2 image preparation and write verification are
@@ -62,7 +67,7 @@ remain **Pending / To be tested**.
 | Git | Available | Repository cloned and inspected |
 | Windows OpenSSH client | Available | Key-based robot login subsequently verified in Step 3 |
 | Raspberry Pi Imager | Installed, product version `v2.0.6` | Executable metadata inspected; no write started |
-| Ubuntu/ROS workstation | Pending | No compatible Ubuntu/ROS runtime verified in this Windows session |
+| Ubuntu/ROS workstation | Ubuntu VM OS subsequently identified | Ubuntu 22.04.5 LTS / x86_64 confirmed in the guest terminal; ROS installation and operation still pending inspection |
 
 The Windows PC can prepare the card and act as an SSH client. Its current
 Windows session is not proof of an Ubuntu 22.04 / ROS 2 Humble workstation.

@@ -8,6 +8,8 @@ baseline is **Ubuntu 22.04 Server 64-bit (ARM64) + ROS 2 Humble**.
 Start with the [physical robot setup log](docs/real_robot_setup.md).
 It records hardware identification, SD-card preparation, Ubuntu, networking and
 SSH, ROS 2, robot drivers, and the evidence required before movement and SLAM.
+For continuing from the Ubuntu VirtualBox guest, read the
+[Ubuntu VM handoff](docs/ubuntu_vm_handoff.md).
 
 **Current progress (22 October 2026):** the Windows PC and H: microSD card have
 been inspected using read-only commands. Before imaging, H: mapped to physical
@@ -34,6 +36,10 @@ ROS 2 Humble installation, OpenCR revision/firmware identification, LiDAR data,
 robot bringup, motion, mapping, localisation and navigation remain
 **Pending / To be tested**. The owner reported LiDAR rotation with the wheels
 and chassis stationary; this is not a passed sensor or movement test.
+
+The Ubuntu workstation VM has now been identified from its terminal output as
+**Ubuntu 22.04.5 LTS, x86_64**. Codex CLI installation, VM-to-Pi SSH and ROS 2
+discovery checks are pending. The VM's name is not evidence that ROS is installed.
 
 Disk numbers can change. The setup log requires a fresh device check and explicit
 owner confirmation before any formatting, partition deletion or image writing.

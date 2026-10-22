@@ -10,7 +10,7 @@ system. Do not substitute a different Ubuntu or ROS distribution silently.
 
 ## Current Status
 
-**21 October 2026 — Step 1 complete.** The PC and SD-card read-only audit is
+**22 October 2026 — Steps 1–3 complete.** The PC and SD-card read-only audit is
 complete. The owner identified the board as **Raspberry Pi 4 Model B** and
 confirmed that the H: microSD card has no data requiring preservation.
 The owner subsequently explicitly authorised overwriting the entire Disk 3
@@ -20,14 +20,19 @@ have passed.** The owner selected an iPhone hotspot, entered credentials in a
 local masked form, and its Wi-Fi seed passed separate file readback checks.
 The owner visually traced the existing power cable from the OpenCR connector
 labelled 5V/GND to Pi physical pins 4/6 respectively. This cable check is
-complete; actual power stability and hotspot association remain untested.
-No robot firmware update, first boot,
-SSH connection or motion test has been performed.
+complete; electrical measurements and load testing remain unperformed.
+The owner has since reported power-on with the top LiDAR rotating and the wheels
+and chassis stationary. Ubuntu first boot, cloud-init completion and key-based
+SSH login have now been verified, with the SSH connection checked again on
+22 October. Step 4's initial locale, timezone, clock and filesystem checks
+passed; package updates remain pending. No robot firmware update, ROS 2
+installation or motion test has been performed.
 
 Each step will be completed and its actual output checked before the next step.
 When a command fails, preserve its output and diagnose that failure before
 considering a reinstall. Step 2 image preparation and write verification are
-complete. First boot and all robot runtime stages remain **Pending / To be tested**.
+complete. First boot and SSH have passed; sensor, motion and SLAM runtime stages
+remain **Pending / To be tested**.
 
 ## Repository Baseline and Preservation
 
@@ -55,7 +60,7 @@ complete. First boot and all robot runtime stages remain **Pending / To be teste
 | Current host | Windows 11 Home, Chinese edition, 64-bit | Inspected directly |
 | Windows version | `10.0.26200` | Inspected directly |
 | Git | Available | Repository cloned and inspected |
-| Windows OpenSSH client | Available | No robot SSH connection tested |
+| Windows OpenSSH client | Available | Key-based robot login subsequently verified in Step 3 |
 | Raspberry Pi Imager | Installed, product version `v2.0.6` | Executable metadata inspected; no write started |
 | Ubuntu/ROS workstation | Pending | No compatible Ubuntu/ROS runtime verified in this Windows session |
 
@@ -142,11 +147,11 @@ only; first re-identify H: if the card is reconnected or a write is proposed.
 | Component | Recorded information | Verification status |
 | --- | --- | --- |
 | Robot | TurtleBot3 Burger | Owner specified; physical inspection pending |
-| Raspberry Pi | Raspberry Pi 4 Model B; RAM and board revision not recorded | Model confirmed by owner from board identification |
+| Raspberry Pi | Raspberry Pi 4 Model B Rev 1.5; `free -h` reports 1.8 GiB RAM | Model initially identified by owner; model/revision and total reported memory subsequently read over SSH |
 | microSD card | H: device identified above; no data requiring preservation | Owner confirmed no backup needed; printed brand/capacity not recorded |
 | OpenCR control board | Exact board revision and installed firmware unknown | Pending label and later USB/firmware checks |
 | Left and right DYNAMIXEL motors | Models, IDs and baud rate unknown | Pending labels and later communication checks |
-| LiDAR | Model and interface unknown | Pending label; do not infer from Burger |
+| LiDAR | Owner reports continuous rotation after power-on; model and interface unknown | Rotation observed by owner only; label and actual scan data pending |
 | Camera | Owner reports a camera module connected to a Pi USB 2 port; model unknown | Connection reported; detection and driver checks pending |
 | Power and cabling | Owner reports an 11.1 V battery connected to OpenCR; visually traced its labelled 5V output to Pi physical pin 4 and GND to pin 6; Pi USB-C unconnected | Existing cable endpoints/polarity confirmed by owner; no meter or load test; board revision, battery condition and power stability pending |
 
@@ -187,8 +192,8 @@ ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz
 The owner-confirmed Pi 4 Model B is compatible with this baseline.
 Canonical's compatibility matrix lists 22.04 support for Pi 3B/3B+/4B, among
 other models, but not Pi 5. A Pi 5 would require resolving the hardware/baseline
-conflict before proceeding. SD write verification has now passed; first boot
-remains pending.
+conflict before proceeding. SD write verification passed at this stage;
+subsequent first-boot and SSH results are recorded in Step 3.
 
 Sources: [ROBOTIS SBC setup, Humble section](https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/),
 [Canonical Raspberry Pi compatibility](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/),
@@ -209,7 +214,7 @@ is not committed to Git.
 | Official checksum comparison | **Passed**; exactly matches the image's entry in `SHA256SUMS` |
 | Image written to SD | **Passed**; approved Disk 3, exact CLI device `\\.\PhysicalDrive3` |
 | Imager readback verification | **Passed**; matching uncompressed-image hashes |
-| First boot | **Pending / To be tested** |
+| First boot | Not tested during download/image writing; subsequently passed in Step 3 |
 
 Sources: [image download](https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/ubuntu-22.04.5-preinstalled-server-arm64+raspi.img.xz)
 and [published SHA256SUMS](https://cdimages.ubuntu.com/ubuntu/releases/22.04/release/SHA256SUMS).
@@ -249,23 +254,24 @@ option is used. The `.xz` SHA256 was checked before writing; it is not passed
 to Imager's `--sha256` option, which expects the decompressed image's hash in
 this version.
 
-### First-boot seed on the card — runtime verification pending
+### First-boot seed on the card — subsequently checked over SSH
 
 The owner confirmed **GB / Europe/London**. The following seed configuration
-has been written to the SD card and inspected separately; it is not yet proof of a successfully configured
-running Raspberry Pi:
+was written to the SD card and inspected separately. Its initial file inspection
+was not proof of a running system; subsequent runtime results are recorded here
+and in Step 3 below:
 
 | Setting | Prepared value | Runtime verification |
 | --- | --- | --- |
-| Username | `ubuntu` | Pending first boot |
-| Hostname | `tb3-burger` | Pending first boot |
-| Locale | `en_GB.UTF-8` | Pending first boot |
-| Timezone | `Europe/London` | Pending first boot |
-| SSH | Dedicated Ed25519 public key; password authentication disabled | Pending first boot and login |
+| Username | `ubuntu` | Verified by `whoami` over SSH |
+| Hostname | `tb3-burger` | Verified by `hostname` over SSH |
+| Locale | `en_GB.UTF-8` | Verified by `locale` |
+| Timezone | `Europe/London` | Verified by `timedatectl` |
+| SSH | Dedicated Ed25519 public key; password authentication disabled in seed | Dedicated-key login passed; effective password policy not yet inspected |
 | Local password | Locked initially; key-based SSH is the intended access method | No console-password login configured |
-| Administrator access | `ubuntu` has sudo access for setup | Pending first boot |
+| Administrator access | `ubuntu` has sudo access for setup | `sudo -n true` passed |
 | Ethernet | `eth0`, DHCP, optional interface | Prepared fallback; iPhone Wi-Fi selected for first boot |
-| Wi-Fi | iPhone hotspot credentials stored privately; `wlan0`, DHCP, country GB | Seed checked in Step 3; association pending |
+| Wi-Fi | iPhone hotspot credentials stored privately; `wlan0`, DHCP, country GB | PC-to-Pi SSH via hotspot passed; effective regulatory domain not yet queried |
 
 A dedicated key pair was created by Windows OpenSSH at
 `C:\Users\LENOVO\.ssh\id_ed25519_tb3_burger` and its `.pub` companion. The private
@@ -341,11 +347,11 @@ Sources: [Imager 2.0.6 CLI](https://github.com/raspberrypi/rpi-imager/blob/v2.0.
 | `user-data` readback | Matches the prepared seed after normalising line endings and duplicate `#cloud-config` header comments |
 | SSH public key | Matches the dedicated PC public key; private key never copied to the SD card |
 | `network-config` readback | At image-write completion, matched the Ethernet-DHCP-only seed; Wi-Fi added and checked separately in Step 3 |
-| Running Ubuntu / SSH login | **Pending / To be tested** |
+| Running Ubuntu / SSH login | Not tested during image writing; subsequently passed in Step 3 |
 
 The readback verifies the written image, not every byte of the nominal 64 GB
-card. The Linux filesystem itself and its capacity after first-boot expansion
-will be checked on the Raspberry Pi. No Windows formatting is required for the
+card. The Linux filesystem and its capacity after first-boot expansion were
+subsequently checked on the Raspberry Pi in Step 4. No Windows formatting is required for the
 second partition or remaining space.
 
 These read-only Windows checks established the post-write partition layout:
@@ -362,8 +368,9 @@ mounted FAT32 boot volume. Separate local comparisons checked the seed text and
 public key without printing their contents. First-boot execution has not been
 tested merely by inspecting these files.
 
-The owner selected an iPhone hotspot. Both the PC and Raspberry Pi will join that
-same hotspot; peer connectivity and SSH still require testing. On an iPhone
+The owner selected an iPhone hotspot. At the image-write stage, joining the same
+hotspot and testing peer connectivity/SSH were still pending; they subsequently
+passed the Step 3 checks. On an iPhone
 that offers Maximise Compatibility, that mode provides 2.4 GHz / WPA2 Personal
 for this initial connection. The Wi-Fi seed is now saved and checked, as recorded
 below. See [Apple's hotspot compatibility explanation](https://support.apple.com/guide/security/wi-fi-security-with-apple-devices-secfd166f620/web).
@@ -374,7 +381,7 @@ Pi to the same router/LAN as the PC, then power it using a verified suitable
 power arrangement. If Ethernet is unavailable, complete the private Wi-Fi seed
 first. Do not infer a working Wi-Fi connection from a successful image write.
 
-## Step 3 — iPhone Hotspot Seed Saved; First Boot Pending
+## Step 3 — First Boot and SSH Passed
 
 The owner entered the hotspot name and password manually in a local masked
 Tkinter form. Before changing `H:\network-config`, the helper checked pinned
@@ -422,9 +429,10 @@ was used to collect the credentials. Independent inspection printed boolean
 results only, including `SDSeedReadbackPassed: true`, `CountryGB: true`, and
 `OriginalUserAndMetadataUnchanged: true`.
 
-**Acceptance:** private seed saved and read back — **Passed**. Raspberry Pi boot,
-hotspot association, PC-to-Pi reachability and SSH login — **Pending / To be tested**.
-Both devices must join the same hotspot; client-to-client access must be tested.
+**Acceptance:** private seed saved/read back, Raspberry Pi boot, PC-to-Pi
+reachability through the selected hotspot and key-based SSH login — **Passed**.
+The owner confirmed that the PC joined the configured iPhone hotspot; direct
+SSH access from that interface succeeded.
 Later package downloads will consume the hotspot's mobile data.
 
 ### Power-cable inspection — owner-confirmed endpoints
@@ -450,7 +458,8 @@ back-powering.
 **Acceptance:** cable source label and endpoint polarity — **Confirmed by the
 owner's visual inspection**. This is not a voltage measurement or load test.
 OpenCR's exact board revision and installed firmware remain unknown. Power
-stability, battery state and actual Ubuntu boot remain **Pending / To be tested**.
+stability under load and battery condition remain **Pending / To be tested**.
+Actual Ubuntu boot subsequently passed the terminal checks below.
 Identify the board before selecting any version-dependent firmware operation;
 no firmware write has been performed.
 
@@ -458,7 +467,7 @@ Sources: [Raspberry Pi power requirements and USB back-powering](https://www.ras
 [Pi 4 official datasheet, GPIO connector pinout](https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf),
 [ROBOTIS separate SBC power-cable guidance](https://emanual.robotis.com/docs/en/platform/turtlebot3/compatible_devices/#power-supply).
 
-### Next action — first boot, not yet performed
+### First-boot procedure and subsequent verification
 
 1. Turn on the already-configured iPhone hotspot, enable Allow Others to Join
    and Maximise Compatibility if available, and keep its hotspot settings open
@@ -476,12 +485,138 @@ Sources: [Raspberry Pi power requirements and USB back-powering](https://www.ras
    an active first boot. Report the Pi's power/activity LEDs and any visible
    errors before proceeding to network discovery and SSH.
 
-This is the next procedure, not a completed test. A lit power LED or an extra
-hotspot client alone will not prove that Ubuntu, cloud-init or SSH succeeded.
-First boot, actual network access and SSH still require direct verification.
+The sequence above was issued before first boot. The owner's later LED report
+and LiDAR rotation were supporting observations only; the terminal checks below
+established actual Ubuntu boot and SSH. Safe-ejection timing was not separately
+observed by the assistant. A lit power LED or an extra hotspot client alone
+does not prove that Ubuntu, cloud-init or SSH succeeded.
 
 Sources: [Ubuntu Raspberry Pi first boot and cloud-init](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#4-boot-ubuntu-server),
 [Apple Personal Hotspot connection procedure](https://support.apple.com/en-gb/111785).
+
+### Power-on observation — partial evidence only
+
+On 21 October 2026, the owner reported that the top LiDAR keeps rotating after
+power-on and confirmed that the wheels and chassis remain stationary. No speed,
+scan quality, motor response or ROS topic was measured. The LiDAR model is still
+unknown; no driver has been selected from this observation.
+
+Continuous rotation alone is not a fault diagnosis or a passed sensor test.
+For example, ROBOTIS documents that updated LDS-01 firmware runs the sensor
+directly on power-on. This is background information, not identification of
+this robot's LiDAR. See the [official LDS-01 power-on note](https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_01/).
+
+The owner later reported a lit red Pi LED, a flashing green LED and that the PC
+was connected to the same iPhone hotspot. Exact boot elapsed time and LED flash
+pattern were not recorded. LiDAR rotation itself does not verify Ubuntu boot,
+cloud-init completion, ROS 2 installation or `/scan` publication.
+
+### Verified SSH access — 21 October; checked again 22 October 2026
+
+Read-only Windows checks identified the active WLAN IPv4 subnet and gateway.
+Name lookups for `tb3-burger.local` and `tb3-burger` did not resolve. Discovery
+was then limited to TCP port 22 on the directly connected hotspot subnet,
+excluding the PC and gateway. No VPN subnet was probed or disabled. One device
+returned an Ubuntu OpenSSH banner. The dedicated key successfully authenticated
+as `ubuntu`; commands then verified the expected hostname, OS and board.
+Actual addresses and MAC addresses are omitted from this public log.
+
+The first connection used OpenSSH `StrictHostKeyChecking=accept-new` with a
+dedicated local known-hosts file. Subsequent connections require the recorded
+host key (`StrictHostKeyChecking=yes`); host-key checking was not disabled.
+The local Windows SSH config at `C:\Users\LENOVO\.ssh\config` did not exist,
+so a new `Host tb3-burger` entry was created without overwriting other entries.
+It selects the current privately recorded IP, user `ubuntu`, the dedicated
+identity, `IdentitiesOnly=yes`, and the dedicated known-hosts file. The real
+host config and key remain outside the repository.
+
+On this configured Windows PC, open PowerShell and run:
+
+```powershell
+ssh tb3-burger
+```
+
+This opens an interactive shell on the Pi using the tested alias and key. A
+shell prompt normally appears as `ubuntu@tb3-burger:~$` once logged in. That
+prompt is an example; the checks below identify the remote system directly.
+Commands entered there execute on the Pi, not on Windows.
+
+```bash
+hostname
+whoami
+uname -m
+cat /etc/os-release
+cloud-init status
+```
+
+`hostname` identifies the remote machine; `whoami` identifies the account;
+`uname -m` checks architecture; `/etc/os-release` identifies Ubuntu; and
+`cloud-init status` checks completion of first-boot configuration. The actual
+sanitised results were:
+
+| Check | Verified result |
+| --- | --- |
+| Remote hostname | `tb3-burger` |
+| Remote user | `ubuntu` |
+| Ubuntu | `Ubuntu 22.04.5 LTS`, Jammy |
+| Architecture | `aarch64` (64-bit ARM) |
+| `/proc/device-tree/model` | `Raspberry Pi 4 Model B Rev 1.5` |
+| First-boot status | `status: done` |
+| Repeat SSH check on 22 October | Exit code `0`; same hostname, user, architecture, Ubuntu and cloud-init result |
+| SSH shortcut check | `ssh -o BatchMode=yes tb3-burger 'hostname; whoami'` returned the expected hostname and user |
+
+To end an interactive session and return to PowerShell:
+
+```bash
+exit
+```
+
+The alias uses a DHCP-assigned address. If the hotspot or lease changes,
+re-identify the Pi and update the local alias; do not assume the old IP is still
+correct or erase a changed host-key warning without investigation. Name lookup
+failure was bypassed with the verified IP; no mDNS service was installed.
+SSH provides terminal administration. Camera viewing, ROS remote operation and
+wheel teleoperation have not been configured or tested yet.
+
+## Step 4 — Ubuntu Baseline Checks Passed; Updates Pending
+
+The following read-only checks and sudo check were run over the verified SSH
+connection on 21 October 2026:
+
+```bash
+locale
+timedatectl
+uname -r
+df -h / /boot/firmware
+free -h
+systemctl is-active ssh
+sudo -n true
+```
+
+`locale` checks the UTF-8 environment. `timedatectl` checks timezone and clock
+synchronisation. `uname -r` records the running kernel. `df` checks filesystem
+capacity after first-boot expansion; `free` reports memory. `systemctl` checks
+the SSH service, and `sudo -n true` verifies administrator access without a
+password prompt or a system change.
+
+| Check | Actual result |
+| --- | --- |
+| Locale | `LANG=en_GB.UTF-8`; reported LC categories use `en_GB.UTF-8` |
+| Timezone | `Europe/London`, BST at inspection |
+| System clock | Synchronised: `yes`; NTP service: `active` |
+| Kernel | `5.15.0-1061-raspi` |
+| Root filesystem | `/dev/mmcblk0p2`, `57G` total, `2.6G` used, `52G` available |
+| Boot filesystem | `/dev/mmcblk0p1`, `505M` total, `68M` used, `437M` available |
+| Memory | `1.8Gi` total reported; no swap configured |
+| SSH service | `active` |
+| Administrator access | `sudo -n true` exited successfully |
+
+The expanded root filesystem confirms that the image's initial small Linux
+partition now uses the card's available capacity. These values are a dated
+snapshot, not a storage benchmark or a power-load test. System package updates,
+post-update checks and any required reboot are **Pending**; ROS 2 installation
+has not started. The next installation step will update Ubuntu within 22.04,
+then check its actual output before proceeding to Humble.
 
 References: [cloud-init 24.2 Netplan passthrough](https://docs.cloud-init.io/en/24.2/reference/network-config-format-v2.html#netplan-passthrough),
 [Netplan 0.106 Wi-Fi settings](https://netplan.readthedocs.io/en/0.106/netplan-yaml/#properties-for-device-type-wifis).
@@ -490,13 +625,13 @@ References: [cloud-init 24.2 Netplan passthrough](https://docs.cloud-init.io/en/
 
 | Setting | Planned requirement / value | Actual result |
 | --- | --- | --- |
-| Ubuntu | Server 22.04, ARM64 | Pending |
+| Ubuntu | Server 22.04, ARM64 | Verified 22.04.5 LTS, `aarch64`, over SSH |
 | Image filename, source and checksum | Official Pi ARM64 Server 22.04.5 image | Downloaded; SHA256 comparison passed above |
-| Username and hostname | `ubuntu` / `tb3-burger` | Prepared in seed; first boot pending |
-| Wi-Fi | Country GB; iPhone credentials entered locally | SD seed saved and checked; association pending |
-| SSH | Dedicated PC key and public-key first-boot seed prepared | Runtime and remote login pending |
-| Locale | `en_GB.UTF-8` | Prepared in seed; runtime pending |
-| Timezone and clock sync | `Europe/London` confirmed | Timezone seed prepared; clock sync pending |
+| Username and hostname | `ubuntu` / `tb3-burger` | Verified over SSH |
+| Wi-Fi | Country GB seed; iPhone credentials entered locally | Hotspot peer connectivity verified by SSH; regulatory-domain runtime query pending |
+| SSH | Dedicated PC key and public-key first-boot seed prepared | Remote login and Windows alias passed; host key retained locally |
+| Locale | `en_GB.UTF-8` | Verified over SSH |
+| Timezone and clock sync | `Europe/London` confirmed | Timezone, active NTP and synchronised clock verified |
 | System updates | Update within Ubuntu 22.04 after network access works | Pending |
 | ROS distribution | Humble | Pending installation |
 | Shell environment | Source Humble; use `TURTLEBOT3_MODEL=burger` | Pending |
@@ -518,8 +653,8 @@ Commands will be added in small, checked steps as hardware is confirmed.
 | Step | Stage | Evidence required before advancing | Status |
 | --- | --- | --- | --- |
 | 2 | Image preparation and approved write | Compatible board, verified image, explicit disk approval, successful write verification | Passed; boot seeds checked separately |
-| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Wi-Fi seed checked; power cable visually traced by owner; first boot and SSH pending |
-| 4 | Ubuntu baseline | Updates, username, hostname, UTF-8 locale, timezone and clock sync verified | Pending |
+| 3 | Ubuntu first boot, network and SSH | Board/OS/architecture output and successful remote login from this PC | Passed; repeat SSH and shortcut checks passed on 22 October |
+| 4 | Ubuntu baseline | Updates, username, hostname, UTF-8 locale, timezone and clock sync verified | Initial baseline checks passed; package updates and post-update checks pending |
 | 5 | ROS 2 Humble | Correct repositories/architecture, working CLI and checked shell environment | Pending |
 | 6 | Robot components | Compatible TurtleBot3, DYNAMIXEL/OpenCR and LiDAR software; device access verified | Pending |
 | 7 | Stationary bringup | Actual messages on `/scan`, `/odom`, `/imu`, `/joint_states`, `/tf` and `/tf_static`; connected frames and valid timestamps | To be tested |
@@ -548,10 +683,12 @@ or feedback is unexpected. No movement or navigation success is claimed here.
 | Uppercase `PHYSICALDRIVE3` did not match Imager's enumerated `PhysicalDrive3` | Inspected debug enumeration and unchanged exFAT layout; corrected spelling while retaining Disk 3 and all guards | Resolved before any write |
 | USB write latency increased with the initial queue depth | Imager automatically reduced the queue depth from 128 to 2; writing and matching readback completed | Resolved by the writer's built-in recovery |
 | Windows initially showed a stale full-disk FAT16 view after the raw write | Fresh storage queries subsequently showed the correct FAT32 boot and Linux image partitions; seed inspection then passed | Resolved without reformatting or rewriting |
+| Pi hostname did not resolve on the hotspot | Discovered SSH only within the observed WLAN subnet, then authenticated with the dedicated key and verified the hostname; created a tested local SSH alias | Direct IP and alias work; mDNS not configured |
 
-No robot runtime errors have been observed because the robot has not yet been
-booted or connected in this session. Add actual terminal errors, diagnoses and
-verified resolutions here as they occur.
+Actual terminal output now verifies Ubuntu boot, completed cloud-init and SSH.
+The LiDAR rotation report remains a physical observation, not a ROS sensor
+test. Add actual installation/runtime errors, diagnoses and verified resolutions
+here as they occur.
 
 ## Stage Publication Procedure
 

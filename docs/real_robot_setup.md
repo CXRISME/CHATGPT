@@ -31,7 +31,9 @@ installation or motion test has been performed.
 The owner subsequently selected the existing VirtualBox workstation guest.
 Its terminal screenshot confirms Ubuntu 22.04.5 LTS and `x86_64`. See the
 [Ubuntu VM handoff](ubuntu_vm_handoff.md) for verified state and the next
-installation step. Codex CLI installation and VM-to-Pi access remain pending.
+installation step. The guest's Codex CLI installer subsequently reported
+version 0.163.0 installed successfully; command verification, sign-in and
+VM-to-Pi access remain pending.
 
 Each step will be completed and its actual output checked before the next step.
 When a command fails, preserve its output and diagnose that failure before

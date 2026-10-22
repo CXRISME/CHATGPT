@@ -38,8 +38,10 @@ robot bringup, motion, mapping, localisation and navigation remain
 and chassis stationary; this is not a passed sensor or movement test.
 
 The Ubuntu workstation VM has now been identified from its terminal output as
-**Ubuntu 22.04.5 LTS, x86_64**. Codex CLI installation, VM-to-Pi SSH and ROS 2
-discovery checks are pending. The VM's name is not evidence that ROS is installed.
+**Ubuntu 22.04.5 LTS, x86_64**. Its Codex CLI installer reported version 0.163.0
+installed successfully; command/version verification and sign-in are pending.
+VM-to-Pi SSH and ROS 2 discovery checks are pending. The VM's name is not
+evidence that ROS is installed.
 
 Disk numbers can change. The setup log requires a fresh device check and explicit
 owner confirmation before any formatting, partition deletion or image writing.

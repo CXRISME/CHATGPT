@@ -27,10 +27,12 @@ running architecture. The screenshot shows:
 | VM resources | Read-only host inspection: 4 virtual CPUs, 11,165 MiB configured memory |
 | VM network | Read-only host inspection: adapter 1 is NAT; adapter 2 disabled |
 | Guest ROS installation | **Pending inspection**; the VM name does not verify ROS |
-| Codex CLI installation and sign-in | **Pending / To be tested** |
+| Download tool | Initially missing; subsequent installer download ran successfully, confirming curl is now available |
+| Codex CLI installer | Owner's screenshot reports `0.163.0 installed successfully` on Linux x64 |
+| CLI command/version verification and sign-in | **Pending / To be tested** |
 | Guest-to-Pi SSH and ROS 2 discovery | **Pending / To be tested** |
 
-## Next Step — Install Codex CLI in the Guest
+## Codex CLI Installation Evidence and Next Checks
 
 The downloaded `chatgpt_amd64.deb` desktop package is separate from Codex CLI.
 As checked on 22 October 2026, the official Linux desktop preview lists Ubuntu
@@ -38,8 +40,60 @@ As checked on 22 October 2026, the official Linux desktop preview lists Ubuntu
 project's Jammy/Humble baseline and use the official CLI installation route.
 Do not upgrade the Ubuntu distribution merely to install the desktop app.
 
-Run this next command in the **Ubuntu VM terminal**, not in the Pi SSH session
-or Windows PowerShell:
+### Initial attempt — missing curl
+
+The owner's next terminal screenshot on 22 October showed:
+
+```text
+Command 'curl' not found, but can be installed with:
+sudo apt install curl
+```
+
+The installer download did not run. Returning to a shell prompt after the pipe
+is not installation success. The following corrective command was provided for execution in the
+**Ubuntu VM terminal**, not in the Pi SSH session or Windows PowerShell:
+
+```bash
+sudo apt update && sudo apt install curl
+```
+
+`apt update` refreshes the guest's package indexes; it does not upgrade the
+Ubuntu distribution. `&&` starts `apt install curl` only if that succeeds.
+The installation uses the VM user's sudo password, entered locally. The owner
+then reported the APT lock wait described below. A later successful installer
+download confirms that curl became available, but its exact package version and
+APT completion output were not supplied. No VM or SD reinstallation was needed
+for the successful installer retry.
+
+### Curl installation waiting for automatic updates
+
+The next screenshot showed repeated `Waiting for cache lock` messages for
+`/var/lib/dpkg/lock-frontend`, held by process `6767 (unattended-upgr)`, with a
+displayed wait of 159 seconds. This identifies a competing automatic-updates
+process; that duration alone does not establish a hang. At that point curl and
+Codex installation were still pending.
+
+The owner was advised to keep the waiting APT terminal open. The proposed
+read-only diagnostic in a second guest terminal was:
+
+```bash
+sudo tail -n 20 /var/log/unattended-upgrades/unattended-upgrades-dpkg.log
+```
+
+This reads the latest package-installation output from automatic updates and
+does not interrupt them. Inspect the actual log before considering further
+action. Do not delete lock files or force-kill the updater to bypass the wait.
+When the updater releases its lock, the waiting installation can continue.
+No updater log or final APT output was supplied. The later installer download
+worked, but that does not separately verify how the automatic update completed.
+No force-unlock command was prescribed.
+
+Sources: [Ubuntu automatic-update logs](https://ubuntu.com/server/docs/how-to/software/automatic-updates/),
+[Debian dpkg FAQ on lock files](https://wiki.debian.org/Teams/Dpkg/FAQ).
+
+### Installer retry — success reported in the guest
+
+The owner reran the official installation command in the guest:
 
 ```bash
 curl -fsSL https://chatgpt.com/codex/install.sh | sh
@@ -47,24 +101,54 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
 This downloads and runs the official standalone Codex CLI installer for the
 current user. `curl -f` rejects HTTP errors, `-sS` keeps progress quiet while
-showing errors, and `-L` follows redirects. This command has been provided as
-the next step; its execution and result in the guest have **not** been verified.
-Check its actual output before proceeding. An error is a troubleshooting input,
-not a reason to reinstall Ubuntu or the robot image.
+showing errors, and `-L` follows redirects. The next screenshot on 22 October
+showed these installer results:
 
-After the installation output is checked, verify the command in the guest:
+| Installer observation | Reported result |
+| --- | --- |
+| Platform | Linux (x64) |
+| Resolved version | `0.163.0` |
+| Package location | Under `/home/vboxuser/.codex/packages/standalone/releases/` |
+| PATH persistence | Installer reported adding PATH to `/home/vboxuser/.bashrc` |
+| Completion | `Codex CLI 0.163.0 installed successfully.` |
+| Start prompt | Owner selected `Y`; output showed `Launching Codex`, then the guest shell prompt |
+
+This records installer-reported success, not a separately executed version
+check or a signed-in session. The screenshot did not show authentication
+completion. Returning to the shell alone is not evidence of an installation
+failure. Check actual command output before choosing another installation path.
+
+### Next check — current-shell PATH and CLI execution
+
+The installer supplied a current-terminal PATH instruction. In the guest's
+existing terminal, the next commands are:
 
 ```bash
+export PATH="$HOME/.local/bin:$PATH"
 codex --version
 ```
 
-This reports the installed CLI version. Follow any installer PATH instructions
-or open a new terminal if necessary; do not assume a successful download means
-that the command is available. Version verification remains **Pending**.
-Then use `codex` from the chosen project directory and complete the sign-in
-flow locally. Do not publish authentication files, login codes or tokens.
+`export` adds the installer's command directory to this shell's PATH; it does
+not reinstall anything or overwrite the PATH entries already present.
+`codex --version` then verifies that the installed command executes and reports
+its version. These commands have been provided as the next check; their result
+remains **Pending**. A new terminal is another way to load the PATH entry that
+the installer reported adding to `.bashrc`.
+
+After version verification, complete the sign-in locally with:
+
+```bash
+codex login
+```
+
+The default ChatGPT sign-in flow opens a browser. Once that flow completes,
+`codex login status` can verify the authentication mode without displaying the
+credential file. Sign-in and status verification remain **Pending**. Start
+`codex` from the chosen project directory after its contents are inspected.
+Do not publish authentication files, login codes or tokens.
 
 Sources: [official Codex CLI installation](https://learn.chatgpt.com/docs/codex/cli),
+[official authentication procedure](https://learn.chatgpt.com/docs/auth),
 [official Linux desktop support matrix](https://learn.chatgpt.com/docs/linux/linux-app).
 
 ## Existing Robot State to Preserve

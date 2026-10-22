@@ -231,3 +231,36 @@ overwrite or merge existing work merely to change workstation environment.
 Publish English documentation after a clear checkpoint, with actual results
 and **Pending / To be tested** for work not yet verified. Never re-image the SD
 card or start motion as part of this workstation handoff.
+
+## VM SSH Preparation Checkpoint — 23 October 2026
+
+The first project session inspected the available filesystem and command output.
+All existing files were retained. These observations describe the session's
+restricted execution view; they are not a complete audit of the unrestricted VM.
+
+| Check | Actual result |
+| --- | --- |
+| OS and architecture | Ubuntu 22.04.5 LTS, x86_64; hostname ROS2humble |
+| Project directory | /home/vboxuser/FYP contains protected metadata directories; no project source files were visible |
+| Other visible project locations | Desktop and Documents had no visible files; Downloads contained chatgpt_amd64.deb |
+| ROS / Gazebo | ros2 and gazebo were not on PATH; /opt/ros was absent; dpkg-query reported no matching Humble/Gazebo packages |
+| Shell configuration | No ROS/Gazebo/colcon setup entries found in .bashrc or .profile |
+| Git | git command not found; protected .git directory was left intact |
+| SSH client | /usr/bin/ssh; openssh-client 1:8.9p1-3ubuntu0.18; ssh-keygen available |
+| Existing guest SSH files | /home/vboxuser/.ssh was empty in the visible filesystem |
+| Network inspection | ip -brief address failed: Cannot open netlink socket: Operation not permitted; /proc/net/route contained only its header |
+| VM-to-Pi SSH | **Pending**; current Pi address and trusted server host-key fingerprint still needed |
+| VM-specific key | **Pending**; no key generated or authorised in this checkpoint |
+
+The session can write only inside /home/vboxuser/FYP and /tmp, so it cannot
+create a persistent private identity under /home/vboxuser/.ssh. Do not place a
+private key in the project or publish it. Generate the guest-specific identity
+in the owner's ordinary VM terminal, preserving existing keys. Transfer only
+its public key through the already-working Windows connection. Obtain the
+current Pi address and Ed25519 SSH host-key fingerprint through that trusted
+connection before checking the VM connection.
+
+The ROS/Gazebo observations above require confirmation in the ordinary VM
+terminal before any installation decision. No packages, network configuration,
+SD contents, firmware or robot motion were changed. Pi updates, ROS installation,
+DDS discovery and all hardware runtime tests remain **Pending / To be tested**.

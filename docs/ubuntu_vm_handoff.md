@@ -29,7 +29,9 @@ running architecture. The screenshot shows:
 | Guest ROS installation | **Pending inspection**; the VM name does not verify ROS |
 | Download tool | Initially missing; subsequent installer download ran successfully, confirming curl is now available |
 | Codex CLI installer | Owner's screenshot reports `0.163.0 installed successfully` on Linux x64 |
-| CLI command/version verification and sign-in | **Pending / To be tested** |
+| CLI command/version verification | Owner's terminal screenshot shows `codex --version` returning `codex-cli 0.163.0` |
+| ChatGPT sign-in | Owner's screenshot shows successful login and `codex login status` returning `Logged in using ChatGPT` |
+| First project/model task | **Pending / To be tested** |
 | Guest-to-Pi SSH and ROS 2 discovery | **Pending / To be tested** |
 
 ## Codex CLI Installation Evidence and Next Checks
@@ -118,10 +120,10 @@ check or a signed-in session. The screenshot did not show authentication
 completion. Returning to the shell alone is not evidence of an installation
 failure. Check actual command output before choosing another installation path.
 
-### Next check — current-shell PATH and CLI execution
+### Current-shell PATH and CLI execution — verified by screenshot
 
 The installer supplied a current-terminal PATH instruction. In the guest's
-existing terminal, the next commands are:
+existing terminal, the owner ran:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -131,25 +133,60 @@ codex --version
 `export` adds the installer's command directory to this shell's PATH; it does
 not reinstall anything or overwrite the PATH entries already present.
 `codex --version` then verifies that the installed command executes and reports
-its version. These commands have been provided as the next check; their result
-remains **Pending**. A new terminal is another way to load the PATH entry that
-the installer reported adding to `.bashrc`.
+its version. The owner's next screenshot on 22 October shows the result
+`codex-cli 0.163.0`, so executable/version verification has **Passed**. This does
+not verify sign-in or model access. A new terminal is another way to load the
+PATH entry that the installer reported adding to `.bashrc`; persistence in a
+new terminal has not yet been checked separately.
 
-After version verification, complete the sign-in locally with:
+### ChatGPT sign-in — verified by screenshot
+
+The owner completed the local sign-in flow after running:
 
 ```bash
 codex login
 ```
 
-The default ChatGPT sign-in flow opens a browser. Once that flow completes,
-`codex login status` can verify the authentication mode without displaying the
-credential file. Sign-in and status verification remain **Pending**. Start
-`codex` from the chosen project directory after its contents are inspected.
-Do not publish authentication files, login codes or tokens.
+The default ChatGPT sign-in flow opens a browser. The owner then ran:
+
+```bash
+codex login status
+```
+
+The next screenshot on 22 October shows `Successfully logged in` and the status
+result `Logged in using ChatGPT`. Authentication and its status check have
+**Passed**, based on the owner's terminal evidence. No authentication URL,
+login code, token or credential-file content is reproduced in this log.
+Sign-in success does not verify model task execution, repository access,
+VM-to-Pi SSH or ROS communication.
 
 Sources: [official Codex CLI installation](https://learn.chatgpt.com/docs/codex/cli),
 [official authentication procedure](https://learn.chatgpt.com/docs/auth),
 [official Linux desktop support matrix](https://learn.chatgpt.com/docs/linux/linux-app).
+
+## Next Action — Start a Local Project Session
+
+Run in the guest terminal:
+
+```bash
+mkdir -p ~/FYP && cd ~/FYP && codex
+```
+
+`mkdir -p` creates the working directory if it is absent and preserves existing
+contents. `cd` selects that directory; the `&&` operators start Codex only after
+the preceding commands succeed. This launches the terminal interface, not a
+GUI desktop app. This project-session command has **not yet been verified**.
+Review any directory-trust prompt against this intended project path and retain
+the default permission settings.
+
+For the first project message, ask Codex to inspect existing files and ROS
+workspaces, then read this handoff and `docs/real_robot_setup.md` from the
+repository's `main` branch. Clone the repository into a new suitable directory
+only if an existing checkout is not present. Do not reset or replace existing
+project files. Start with guest-to-Pi SSH access and actual diagnostic output.
+If the guest needs a new SSH identity authorised on the Pi, generate a
+guest-specific key and provide **only its public key** for authorisation
+through the working Windows connection. Keep the private key in the guest.
 
 ## Existing Robot State to Preserve
 
@@ -169,7 +206,8 @@ Sources: [official Codex CLI installation](https://learn.chatgpt.com/docs/codex/
 
 ## Continue in Small Checked Steps
 
-1. Verify Codex CLI installation and sign-in in the guest.
+1. CLI execution/version and ChatGPT sign-in have passed. Start the local
+   project session and verify its first model task; that task is still pending.
 2. Inspect existing guest project directories and ROS installations before
    cloning or installing anything. Retain all existing Gazebo/ROS work.
 3. Prepare VM-specific SSH access. Windows' key, known-hosts file and alias do

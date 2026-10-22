@@ -39,7 +39,9 @@ and chassis stationary; this is not a passed sensor or movement test.
 
 The Ubuntu workstation VM has now been identified from its terminal output as
 **Ubuntu 22.04.5 LTS, x86_64**. Its Codex CLI installer reported version 0.163.0
-installed successfully; command/version verification and sign-in are pending.
+installed successfully; `codex --version` then returned `codex-cli 0.163.0`.
+ChatGPT sign-in was verified by `codex login status`, which returned
+`Logged in using ChatGPT`. A project/model task has not yet been tested.
 VM-to-Pi SSH and ROS 2 discovery checks are pending. The VM's name is not
 evidence that ROS is installed.
 

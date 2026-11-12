@@ -6,12 +6,13 @@ navigation-performance trial.
 
 This entry follows the structure of `experiments/TEMPLATE.md` on the existing
 `scaffold/ros2-slam-fyp` branch. The scaffold is not merged by this update.
-Today's implementation steps, observations and measurements below are recorded
-from the owner's supplied progress report. The documentation update did not
-rerun the experiments or inspect the Ubuntu VM's saved artifacts. No screenshots,
-map files or trial CSV files were found in the inspected `main` tree or local
-repository working tree. Proposed evidence is indexed below without implying
-that it has been supplied.
+Implementation steps and initial measurements were recorded from the owner's
+progress report. On **12 November 2026**, the owner supplied a Word record
+containing screenshots of the 5 November session. The evidence follow-up below
+links the extracted original images and distinguishes visible output from
+reported work and interpretation. The documentation update did not rerun the
+experiments or access the VM. Original PGM/YAML map files, trial CSV files and
+rosbag recordings have not been supplied.
 
 ## Objective and Hypothesis
 
@@ -36,14 +37,14 @@ measurement is an **unverified hypothesis**, not a confirmed cause.
 | --- | --- |
 | Workstation | Ubuntu 22.04.5 LTS in Oracle VirtualBox; earlier handoff identifies the guest as x86_64 |
 | ROS distribution | ROS 2 Humble Desktop; official ROS 2 APT repository added; `ROS_DISTRO=humble` and the `ros2` CLI verified in the reported session |
-| Simulation and visualisation | Gazebo Classic, official TurtleBot3 World, RViz2; exact package versions not supplied |
+| Simulation and visualisation | Gazebo Classic, official TurtleBot3 World, RViz2; screenshots show installation of `ros-humble-turtlebot3-gazebo` version `2.3.8-1jammy.20260915.233431`; other exact package versions not supplied |
 | Robot model | TurtleBot3 Burger; `TURTLEBOT3_MODEL=burger` |
 | SLAM and navigation software | TurtleBot3 packages and Gazebo integration, Cartographer, SLAM Toolbox and Navigation2 installed; Cartographer used for today's mapping, AMCL for localisation |
 | Workspace | `~/fyp_slam_ws/src` created in the Ubuntu VM |
 | Raspberry Pi / hardware | Physical TurtleBot3 Burger and Raspberry Pi; the October setup log identifies a Raspberry Pi 4 Model B and Ubuntu 22.04.5 LTS ARM64; today's report concerns SD preparation, connectivity configuration and replacement-battery checks |
 | Network and SSH | First-boot Wi-Fi and SSH configured; current physical-robot SSH connectivity not fully verified; VM-to-Pi access remains pending |
-| Timing and configuration | TF inspection command below explicitly uses `use_sim_time:=true`; complete launch parameters, package versions, RMW, ROS domain, test timestamps and measurement windows not supplied |
-| Run metadata | Experiment code revision, parameter hashes, route/start/goal coordinates, speed limits, map checksums and raw logs not supplied; no repeated-trial dataset available |
+| Timing and configuration | TF inspection command below explicitly uses `use_sim_time:=true`; screenshots contain TF simulator timestamps and topic-rate sample-window counts, but no synchronised Gazebo/TF sampling record or capture timezone |
+| Run metadata | Experiment code revision, complete launch parameters, RMW, ROS domain, parameter hashes, complete route/start/goal records, map checksums and machine-readable logs not supplied; no repeated-trial dataset available |
 
 The [physical setup log](../docs/real_robot_setup.md) records successful
 Windows-to-Pi SSH on 21–22 October. Today's pending connectivity check does not
@@ -92,9 +93,22 @@ notes do not imply that an additional SD-card rewrite was performed today.
    `/scan`, `/odom`, `/cmd_vel` and `/tf` topics, and keyboard teleoperation.
    Recorded approximate scan and odometry publishing rates in the results below.
 
-Exact installation, launch, manual-spawn, topic-rate and teleoperation command
-lines were not supplied; this record does not reconstruct them as executed
-commands.
+The screenshots supplied later show the launch and topic-check commands below.
+Other exact installation, manual-spawn and teleoperation command lines remain
+untranscribed; no missing command is reconstructed as an executed step.
+
+```bash
+ros2 pkg prefix turtlebot3_gazebo
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+ros2 topic list
+ros2 topic hz /scan
+ros2 topic hz /odom
+```
+
+The launch screenshot records an initial 30-second `/spawn_entity` wait followed
+by failure. A later terminal screenshot explicitly reports
+`Successfully spawned entity [burger]`; the failure and recovery evidence are
+both retained in the [source-image index](evidence/2026-11-05/README.md).
 
 ### Cartographer mapping and map saving
 
@@ -108,8 +122,11 @@ Reported map files saved in the Ubuntu VM:
 - `~/fyp_slam_ws/fyp_records/maps/2026-11-05_cartographer_map.pgm`
 - `~/fyp_slam_ws/fyp_records/maps/2026-11-05_cartographer_map.yaml`
 
-These are reported VM paths, not verified repository attachments. Their contents
-and checksums were not available for this documentation update.
+These are reported VM paths, not repository attachments. The alignment screenshot
+shows a terminal readout from `cat` of the YAML path and the fields below. This
+is screenshot evidence of metadata, not an inspected YAML/PGM file pair; original
+file bytes and map checksums remain unavailable. The supplied 122 × 124 PNG is
+indexed separately as a map preview and is not substituted for the saved PGM.
 
 | Map parameter | Reported value |
 | --- | --- |
@@ -117,7 +134,8 @@ and checksums were not available for this documentation update.
 | Origin | `[-3.34, -3.52, 0]` |
 | Mode | `trinary` |
 | Occupied threshold | 0.65 |
-| Other YAML fields | Not supplied; not inferred |
+| Negate | 0; visible in the supplied terminal screenshot |
+| Free threshold | 0.25; visible in the supplied terminal screenshot |
 
 ### AMCL localisation and initial Nav2 goal
 
@@ -130,8 +148,13 @@ and checksums were not available for this documentation update.
    shutdown without reinstalling software or rebuilding the map.
 
 This is an initial functional demonstration of mapping, localisation, path
-planning and goal navigation. No final-position error, task duration, stable
-final heading or formal collision/manual-intervention trial record is supplied.
+planning and goal navigation. The supplied first-success screenshot visibly
+shows Navigation2 feedback **`reached`**, with navigation/localisation active
+and displayed distance remaining `0.00 m`. That display supports functional
+goal completion; it does not measure ground-truth final-position error. Its
+displayed `Time taken: 0 s` is not used as a measured navigation duration.
+No validated task duration, stable final heading or formal collision/manual-
+intervention trial record is supplied.
 
 ### Preliminary coordinate-frame alignment
 
@@ -168,24 +191,47 @@ ros2 run tf2_ros tf2_echo \
 ```
 
 After correcting an AMCL initial-localisation mismatch, the owner reported the
-positional residuals below. Reference poses, timestamps, sampling windows and
-the complete calibration/validation correspondences were not supplied, so
-independent validation cannot be established.
+positional residuals below. The supplied screenshots now expose corresponding
+Gazebo and aligned-frame pose readouts. Their Gazebo readouts lack matching
+simulator timestamps, and the complete calibration protocol and independent
+landmark measurements remain unavailable, so independent validation cannot be
+established.
+
+### Screenshot follow-up reviewed on 12 November 2026
+
+The following pairs are transcribed from the terminal screenshots. D and E are
+documentation labels for the two later comparisons, matching the proposed
+evidence filenames; they are not formal navigation-trial IDs. Planar residuals
+were recalculated as `sqrt((x_ros-x_gz)^2 + (y_ros-y_gz)^2)` using the displayed
+coordinates, including the rounded TF values.
+
+| Comparison / source | Gazebo world XY (m) | Aligned-frame ROS XY (m) | Recalculated planar residual | Gazebo / ROS yaw (rad) |
+| --- | --- | --- | --- | --- |
+| Initial aligned position; source `image19.png` | `[-0.960581, -0.547206]` | `[-0.969, -0.481]` | 0.06674 m, consistent with reported 0.067 m | `1.74125 / 1.721` |
+| D; source `image21.png` | `[0.638673, -0.633912]` | `[0.632, -0.582]` | 0.05234 m, consistent with reported 0.052 m | `1.23646 / 1.268` |
+| E; source `image22.png` | `[0.897465, 0.534088]` | `[0.905, 0.526]` | 0.01105 m, consistent with reported 0.011 m | `0.106861 / 1.061` |
+
+For E, the displayed yaw difference is approximately 54.7°. RViz still shows
+feedback `active`, distance remaining `0.04 m`, elapsed display `20 s` and one
+recovery in that screenshot. It is not a stopped-state heading check or a
+completed formal trial. Transient disconnected/invalid-frame messages also
+precede successful TF output in the later screenshots. These still images do
+not establish TF continuity or synchronised ground-truth comparison.
 
 ## Observations and Results
 
 | Observation / metric | Reported result | Interpretation and limits |
 | --- | --- | --- |
-| Simulated LiDAR publishing rate | Approximately **4.3 Hz** | Measured rate reported for simulation; measurement window and raw output not supplied; not a physical LiDAR result |
-| Simulated odometry publishing rate | Approximately **25.7 Hz** | Measured rate reported for simulation; measurement window and raw output not supplied |
+| Simulated LiDAR publishing rate | Approximately **4.3 Hz** | Figure 2 shows rolling averages 4.222–4.361 Hz; one entry is 4.321 Hz with window 31, final visible entry 4.287 Hz with window 114; window counts are samples, not seconds; not a physical LiDAR result |
+| Simulated odometry publishing rate | Approximately **25.7 Hz** | Supplied odometry screenshot shows the second invocation ending at 25.690 Hz, window 603, min 0.010 s, max 0.074 s and std dev 0.00928 s; no machine-readable rate log supplied |
 | Sensor/command/TF topics | `/scan`, `/odom`, `/cmd_vel`, `/tf` confirmed | Functional topic check; does not establish physical-robot communication |
 | Keyboard teleoperation | Successful | Qualitative simulation result; no trajectory or speed dataset supplied |
 | Cartographer map | Outer walls and nine internal cylinders represented | Qualitative occupancy-grid observation; map accuracy not measured |
-| Initial Nav2 task | Successful task reported; `/navigate_to_pose` verified | Functional demonstration; no formal navigation accuracy or success-rate measurement |
-| Preliminary alignment residual — first reported position | Approximately **0.067 m** | Coordinate-alignment residual; independently calibrated reference not available |
-| Preliminary alignment residual — subsequent position | Approximately **0.052 m** | Coordinate-alignment residual; no correspondence to a proposed screenshot inferred |
-| Preliminary alignment residual — another position | Approximately **0.011 m** | Coordinate-alignment residual; not a navigation goal error |
-| Heading discrepancy during one navigation test | Approximately **54.7°** | Unresolved observation; robot may still have been rotating, but that explanation is unverified |
+| Initial Nav2 task | Successful task reported; screenshot feedback `reached`; `/navigate_to_pose` verified in the owner's report | Functional demonstration; no formal navigation accuracy or success-rate measurement |
+| Preliminary alignment residual — first reported position | Approximately **0.067 m** | Figure 6 exposes the pose pair; independently calibrated reference not available |
+| Preliminary alignment residual — subsequent position D | Approximately **0.052 m** | Figure 7 exposes the pose pair; unsynchronised coordinate-alignment comparison |
+| Preliminary alignment residual — another position E | Approximately **0.011 m** | Figure 8 exposes the pose pair; not a navigation goal error |
+| Heading discrepancy during comparison E | Approximately **54.7°** | Feedback is still active in Figure 8; actual rotation is not established by a still image; stopped-state verification pending |
 | VM shutdown recovery | Simulation/navigation restored using existing installation and saved map | Functional recovery reported; recovery command transcript not supplied |
 | Formal navigation trials, durations and final-position errors | **Not performed / not measured** | No CSV, success ratio or validated 0.2 m accuracy result |
 
@@ -208,29 +254,45 @@ performance validation incomplete**. Physical-robot runtime tests remain
 | Ambiguous localisation around repeated obstacle geometry | Reset the AMCL initial pose; alignment improved | Repeated cylinders can make pose interpretation ambiguous; localisation reliability is not quantified |
 | Gazebo-world / ROS-map coordinate mismatch | Established the temporary rigid transform and compared poses | Independent landmark validation is still required before accuracy claims |
 | Virtual machine shutdown | Restored simulation and navigation without reinstalling or recreating the map | Retaining the saved map and environment allowed recovery; exact recovery steps still need recording |
+| RViz Docking and Selector panels fail to load | Supplied navigation screenshots show missing `nav2_rviz_plugins/Docking` and `nav2_rviz_plugins/Selector` classes | Unresolved UI issue; Navigation2 feedback can still show `reached`; no repair is claimed |
 
 ## Evidence Index
 
-All eight filenames below are **proposed evidence names**. None was present in
-the inspected repository or local working tree. Captions describe intended
-figures; they do not certify unseen screenshot contents. No broken image embeds
-or links to missing files are included.
+The owner supplied `fyp进行记录.docx` on 12 November. Its 23 embedded images were
+extracted and inspected. **21 original PNGs** are included unchanged under
+[`evidence/2026-11-05/`](evidence/2026-11-05/README.md), with source-media mappings,
+dimensions, byte sizes and SHA256 hashes in the
+[manifest](evidence/2026-11-05/manifest.json). Two ChatGPT-response screenshots
+(`image20.png` and `image23.png`) were excluded from the primary evidence set;
+their analysis and instructions are not independent experimental observations.
+The experiment date remains 5 November, and screenshot capture timezone is
+unknown.
 
-| Proposed figure | Proposed filename | Intended caption / evidence scope |
+| Figure | Supplied evidence | Caption / evidence scope |
 | --- | --- | --- |
-| 1 | `2026-11-05_Burger_Spawn_Success.png` | Burger visible in TurtleBot3 World after delayed manual spawning; qualitative spawn evidence |
-| 2 | `2026-11-05_LiDAR_Frequency_Test.png` | Simulated `/scan` frequency check, reported at approximately 4.3 Hz; retain the actual sampling output when supplied |
-| 3 | `2026-11-05_Cartographer_SLAM_Result.png` | Cartographer occupancy grid showing outer walls and nine cylindrical obstacles; qualitative map result |
-| 4 | `2026-11-05_Nav2_First_Success.png` | Initial Nav2 goal completion in the saved map; functional success, not a final-position accuracy measurement |
-| 5 | `2026-11-05_Gazebo_Ground_Truth_Pose.png` | Gazebo Burger pose from `gz model -m burger -p`; simulator reference pose requiring frame/time correspondence |
-| 6 | `2026-11-05_Coordinate_Alignment_Success.png` | Temporary world/map alignment comparison; preliminary residual, not independently validated navigation accuracy |
-| 7 | `2026-11-05_Coordinate_Validation_D.png` | Proposed additional coordinate comparison D; raw poses and correspondence to reported residuals remain to be supplied |
-| 8 | `2026-11-05_Coordinate_Validation_E.png` | Proposed additional coordinate comparison E; raw poses and correspondence to reported residuals remain to be supplied |
+| 1 | [Burger spawn success](evidence/2026-11-05/2026-11-05_Burger_Spawn_Success.png) | Source image3: Gazebo model tree includes Burger; robot and LiDAR rays visible after recovery |
+| 2 | [LiDAR frequency test](evidence/2026-11-05/2026-11-05_LiDAR_Frequency_Test.png) | Source image5: successful spawn message, topic list and `/scan` rolling publishing-rate output around 4.3 Hz |
+| 3 | [Cartographer SLAM result](evidence/2026-11-05/2026-11-05_Cartographer_SLAM_Result.png) | Source image8: enclosing walls and nine cylindrical obstacles represented in RViz alongside Gazebo; qualitative map result |
+| 4 | [First Nav2 success](evidence/2026-11-05/2026-11-05_Nav2_First_Success.png) | Source image12: Navigation2 feedback `reached` and displayed distance remaining 0.00 m; no independent position-error measurement |
+| 5 | [Gazebo ground-truth pose](evidence/2026-11-05/2026-11-05_Gazebo_Ground_Truth_Pose.png) | Source image14: `gz model -m burger -p` returns a simulator pose; adjacent map-frame TF illustrates the earlier mismatch |
+| 6 | [Coordinate alignment comparison](evidence/2026-11-05/2026-11-05_Coordinate_Alignment_Success.png) | Source image19: Gazebo and aligned-frame TF values support the approximately 0.067 m residual; temporary transform and YAML readout visible |
+| 7 | [Coordinate comparison D](evidence/2026-11-05/2026-11-05_Coordinate_Validation_D.png) | Source image21: displayed pose pair supports approximately 0.052 m alignment residual; samples lack a shared timestamp |
+| 8 | [Coordinate comparison E](evidence/2026-11-05/2026-11-05_Coordinate_Validation_E.png) | Source image22: displayed pose pair supports approximately 0.011 m alignment residual; Nav2 feedback still active, heading verification pending |
 
-- Map YAML/image: reported VM paths above; files not supplied to this repository.
-- Raw terminal logs, odometry-rate evidence, calibration pairs and timestamps:
-  not supplied.
-- rosbag2 recordings, trial CSV files and artifact checksums: not supplied.
+The source Word caption calls image2 a successful startup log, but its terminal
+actually shows the initial spawn timeout. It is retained as
+[failure evidence](evidence/2026-11-05/2026-11-05_Burger_Spawn_Timeout.png).
+Source image1 shows the world before Burger spawning, and source image4 is a
+robot close-up rather than terminal-only success. Captions follow visible
+content. Both rate-test screenshots initially warn that the topic does not
+appear published, then show actual measurements.
+
+- Original map YAML/PGM files and their checksums: not supplied; screenshot
+  metadata and a PNG preview are available.
+- Odometry-rate output and several pose pairs: now available as screenshots;
+  complete machine-readable logs and synchronised calibration data remain absent.
+- rosbag2 recordings and navigation-trial CSV results: not supplied. The evidence
+  manifest contains image provenance, not a navigation-trial dataset.
 
 ## Discussion and Next Step
 

@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "experiment_date": "2026-11-05",
+  "extraction_date": "2026-11-12",
+  "review_date": "2026-11-12",
+  "source_document": {
+    "filename": "fyp进行记录.docx",
+    "sha256": "0004b93d070ffaf37ff45c54be7463b061676b78d68c36807e6ee4b416dfa0a3",
+    "included_in_repository": false
+  },
+  "capture_timezone": "Not established from the supplied document or screenshots.",
+  "date_scope": "Filenames associate these images with the reported 5 November 2026 development checkpoint; extraction/review took place on 12 November 2026.",
+  "preservation": "Original embedded PNG bytes copied unchanged; no cropping, resizing, redrawing or recompression.",
+  "images": [
+    {
+      "source_image_number": 1,
+      "source_embedded_path": "word/media/image1.png",
+      "file": "2026-11-05_Gazebo_World_Before_Spawn.png",
+      "width": 1280,
+      "height": 1393,
+      "bytes": 280768,
+      "sha256": "fe7d33704e1486aff3b42d02a64d9271c6be3bb7f5367fdce7b48029b985b71d",
+      "caption": "TurtleBot3 World and nine cylinders before Burger appears in the model list."
+    },
+    {
+      "source_image_number": 2,
+      "source_embedded_path": "word/media/image2.png",
+      "file": "2026-11-05_Burger_Spawn_Timeout.png",
+      "width": 819,
+      "height": 756,
+      "bytes": 209826,
+      "sha256": "e6873f6f3b1a1e947244ba62dd47132c39c28c60b875b286c246d3fac1688fb5",
+      "caption": "Initial automatic spawning fails because /spawn_entity is unavailable after a 30-second timeout."
+    },
+    {
+      "source_image_number": 3,
+      "source_embedded_path": "word/media/image3.png",
+      "file": "2026-11-05_Burger_Spawn_Success.png",
+      "width": 1280,
+      "height": 1393,
+      "bytes": 833169,
+      "sha256": "778047de2239dcbe281604ee673177793c6dc0b410bd98d95380103063b14645",
+      "caption": "Burger appears in the Gazebo model list and arena, with simulated LiDAR rays."
+    },
+    {
+      "source_image_number": 4,
+      "source_embedded_path": "word/media/image4.png",
+      "file": "2026-11-05_Burger_Model_LiDAR_Closeup.png",
+      "width": 1279,
+      "height": 1392,
+      "bytes": 814035,
+      "sha256": "ea0280033a6b1dfeb33554fef337d449a13623092f965ed9acb4427b6e9c3c0f",
+      "caption": "Close-up of the Burger model and simulated LiDAR visualisation."
+    },
+    {
+      "source_image_number": 5,
+      "source_embedded_path": "word/media/image5.png",
+      "file": "2026-11-05_LiDAR_Frequency_Test.png",
+      "width": 1280,
+      "height": 1394,
+      "bytes": 620207,
+      "sha256": "385aaca5fb0f4a0afb78dd2ce099270c622428367063c8a140b9a52d20f2b0b2",
+      "caption": "Terminal reports successful Burger spawning, lists ROS topics and displays ros2 topic hz /scan measurements around 4.3 Hz."
+    },
+    {
+      "source_image_number": 6,
+      "source_embedded_path": "word/media/image6.png",
+      "file": "2026-11-05_Odometry_Frequency_Test.png",
+      "width": 1278,
+      "height": 1390,
+      "bytes": 645730,
+      "sha256": "71ebdf614a84ab191ae551c16221607cf0c96dcb4ad1ec4b5792d9a5a66a9057",
+      "caption": "Two ros2 topic hz /odom checks; the final displayed rate is 25.690 Hz with window count 603."
+    },
+    {
+      "source_image_number": 7,
+      "source_embedded_path": "word/media/image7.png",
+      "file": "2026-11-05_Cartographer_Initial_Map.png",
+      "width": 1282,
+      "height": 1394,
+      "bytes": 540090,
+      "sha256": "0c5f06c8f800e07b5a246b9369a873d87b392fb49155a4652f0cbbf1cc14f814",
+      "caption": "Cartographer RViz2 configuration showing an intermediate occupancy grid, LaserScan and TF."
+    },
+    {
+      "source_image_number": 8,
+      "source_embedded_path": "word/media/image8.png",
+      "file": "2026-11-05_Cartographer_SLAM_Result.png",
+      "width": 2144,
+      "height": 1391,
+      "bytes": 1165755,
+      "sha256": "815d688aa18a3b857e6e2893e45f51cca0fb8086c1e94f789bb97dfeb25102e5",
+      "caption": "Cartographer occupancy grid shows the enclosing walls and nine cylinders alongside Gazebo and teleoperation output."
+    },
+    {
+      "source_image_number": 9,
+      "source_embedded_path": "word/media/image9.png",
+      "file": "2026-11-05_Occupancy_Grid_Preview.png",
+      "width": 122,
+      "height": 124,
+      "bytes": 1276,
+      "sha256": "81be0930b3f7471e833fb972d82aa2c39f71067b36d4e2ca90e08da06a79d692",
+      "caption": "Embedded 122 by 124 pixel occupancy-grid preview; not the saved PGM map artifact."
+    },
+    {
+      "source_image_number": 10,
+      "source_embedded_path": "word/media/image10.png",
+      "file": "2026-11-05_Nav2_Localisation_View.png",
+      "width": 2147,
+      "height": 1390,
+      "bytes": 904445,
+      "sha256": "73320042127fa134e7ce6d5cdae6b1a634a4a347daf4189982b6e01a02368313",
+      "caption": "RViz2 navigation/localisation display, occupancy grid and costmaps alongside Gazebo."
+    },
+    {
+      "source_image_number": 11,
+      "source_embedded_path": "word/media/image11.png",
+      "file": "2026-11-05_Nav2_Goal_In_Progress.png",
+      "width": 2150,
+      "height": 1393,
+      "bytes": 965751,
+      "sha256": "7090bf814b6fd4f792636e5722c7ee15f9b6b4811a168bc18ed1b9e65998dd8f",
+      "caption": "RViz2 Nav2 goal and navigation feedback view during the initial navigation sequence."
+    },
+    {
+      "source_image_number": 12,
+      "source_embedded_path": "word/media/image12.png",
+      "file": "2026-11-05_Nav2_First_Success.png",
+      "width": 2149,
+      "height": 1394,
+      "bytes": 987014,
+      "sha256": "4fe4cd0718889e703dcbf19db839a0a5a354802239ca3887d30c2f87e5837a11",
+      "caption": "RViz2 reports Navigation active, Localisation active and Feedback reached; this is functional goal completion evidence."
+    },
+    {
+      "source_image_number": 13,
+      "source_embedded_path": "word/media/image13.png",
+      "file": "2026-11-05_Keyboard_Teleoperation.png",
+      "width": 1280,
+      "height": 1393,
+      "bytes": 637911,
+      "sha256": "0c9a2f3abf8e40d66cae80ccf5a88d93012c146a5ce0f5c30c1d74f5c9f622a2",
+      "caption": "Keyboard teleoperation terminal output alongside the Gazebo robot and arena."
+    },
+    {
+      "source_image_number": 14,
+      "source_embedded_path": "word/media/image14.png",
+      "file": "2026-11-05_Gazebo_Ground_Truth_Pose.png",
+      "width": 2269,
+      "height": 1395,
+      "bytes": 1011441,
+      "sha256": "015fa36bc0efac3ac352529e698285aeb7045673f7564b6b73210287e97e1cd6",
+      "caption": "Gazebo model-pose terminal output alongside RViz2 and Gazebo; simulator reference pose evidence."
+    },
+    {
+      "source_image_number": 15,
+      "source_embedded_path": "word/media/image15.png",
+      "file": "2026-11-05_ROS_Map_Pose.png",
+      "width": 2265,
+      "height": 1389,
+      "bytes": 1013134,
+      "sha256": "23d20c6158570e41ac290607d2474e573f1423a65ac43916b4c799fcca3631b7",
+      "caption": "Gazebo pose output followed by tf2_echo map base_footprint with simulation time; coordinate comparison before alignment."
+    },
+    {
+      "source_image_number": 16,
+      "source_embedded_path": "word/media/image16.png",
+      "file": "2026-11-05_Gazebo_Pose_Recheck.png",
+      "width": 2262,
+      "height": 1392,
+      "bytes": 1016204,
+      "sha256": "4130a0d92f8eaf77671685bc6d89c9a3682a01bd7fc7e63950a2dbdf6baf0d0a",
+      "caption": "Further simulator and ROS pose inspection alongside RViz2 and Gazebo."
+    },
+    {
+      "source_image_number": 17,
+      "source_embedded_path": "word/media/image17.png",
+      "file": "2026-11-05_Coordinate_Frame_Investigation.png",
+      "width": 2266,
+      "height": 1391,
+      "bytes": 1039800,
+      "sha256": "273e01f31a0d4be6b519d34c59549f3181cb0094b9695434e57e5aee13995f71",
+      "caption": "Terminal and RViz2/Gazebo views used to investigate coordinate-frame alignment."
+    },
+    {
+      "source_image_number": 18,
+      "source_embedded_path": "word/media/image18.png",
+      "file": "2026-11-05_Coordinate_Frame_Transform.png",
+      "width": 2267,
+      "height": 1393,
+      "bytes": 1056978,
+      "sha256": "8110a7d7e4cd185915a340463a199280d5490a7d486dd976498e40b4af67973a",
+      "caption": "Terminal and RViz2/Gazebo views during temporary reference-frame alignment work."
+    },
+    {
+      "source_image_number": 19,
+      "source_embedded_path": "word/media/image19.png",
+      "file": "2026-11-05_Coordinate_Alignment_Success.png",
+      "width": 2266,
+      "height": 1392,
+      "bytes": 1056051,
+      "sha256": "d9fa26cacecbdd226cdab8870fd4fd27071b0588eee0a70e2771a5ed5037c8bf",
+      "caption": "Map/LaserScan alignment view and pose output after the reported localisation adjustment; preliminary alignment evidence."
+    },
+    {
+      "source_image_number": 21,
+      "source_embedded_path": "word/media/image21.png",
+      "file": "2026-11-05_Coordinate_Validation_D.png",
+      "width": 2048,
+      "height": 1258,
+      "bytes": 1290014,
+      "sha256": "8623b1c2bfa87769cf3dc9b08f8a20a6eca6952c5f83ca43dc99009eae2a8c22",
+      "caption": "Further simulator/ROS coordinate comparison D; independent landmark calibration and navigation accuracy are not established."
+    },
+    {
+      "source_image_number": 22,
+      "source_embedded_path": "word/media/image22.png",
+      "file": "2026-11-05_Coordinate_Validation_E.png",
+      "width": 2266,
+      "height": 1392,
+      "bytes": 1052565,
+      "sha256": "86f87f2b0ceab56fb9c27284de0e873fad649fc409edd335ee583e8169b46930",
+      "caption": "Further simulator/ROS coordinate comparison E; independent landmark calibration and navigation accuracy are not established."
+    }
+  ],
+  "excluded_images": [
+    {
+      "source_image_number": 20,
+      "source_embedded_path": "word/media/image20.png",
+      "width": 2560,
+      "height": 1528,
+      "bytes": 250511,
+      "sha256": "41c61cd660af13203f39b53340758067e18d02d6e86ef51fb32b3e70994df7ee",
+      "reason": "Screenshot of ChatGPT-generated interpretation/calculation, not a primary simulator or ROS measurement; not imported as experiment evidence."
+    },
+    {
+      "source_image_number": 23,
+      "source_embedded_path": "word/media/image23.png",
+      "width": 2560,
+      "height": 1528,
+      "bytes": 265750,
+      "sha256": "cae7612a1c1e6f3783358a841ab037d0b5860afa1f4d6622a8cd017291c42753",
+      "reason": "Screenshot of ChatGPT-generated interpretation/calculation, not a primary simulator or ROS measurement; not imported as experiment evidence."
+    }
+  ]
+}

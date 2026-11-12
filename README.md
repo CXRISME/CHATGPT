@@ -58,3 +58,27 @@ Its source files, configuration examples, experiment template and documentation
 are retained on that branch. This physical-setup documentation update does not
 merge or replace that work. No completed Gazebo experiments, robot motion tests
 or SLAM trials have been verified in this setup log.
+
+## Development Progress — 5 November 2026
+
+The [dated SLAM and Nav2 development record](experiments/2026-11-05_slam_nav2_development.md)
+records the owner's reported Humble installation, TurtleBot3 World sensor and
+teleoperation checks, Cartographer map saving, initial AMCL/Nav2 goal success,
+VM recovery and preliminary coordinate-frame alignment. It also records SD-card,
+Wi-Fi/SSH preparation and replacement-battery checks. The October setup and
+handoff sections above remain historical checkpoints; today's simulation
+progress is documented separately.
+
+Reported simulated publishing rates are approximately 4.3 Hz for LiDAR and
+25.7 Hz for odometry. The 0.067 m, 0.052 m and 0.011 m positional comparisons
+are **preliminary coordinate-alignment residuals**, not validated navigation
+goal errors. Independent frame validation, final-heading verification and the
+formal 10-trial evaluation remain pending; the 0.2 m accuracy requirement has
+not been demonstrated. Current physical-robot SSH and real LiDAR verification
+also remain pending, while the earlier Windows-to-Pi SSH result is preserved.
+Screenshot evidence was supplied and reviewed on **12 November 2026**. The
+[evidence index](experiments/evidence/2026-11-05/README.md) links 21 original
+images, including the initial spawn failure, measured topic rates, Cartographer
+map, Nav2 `reached` feedback and preliminary pose comparisons. Source mappings
+and image SHA256 hashes are recorded. Map paths remain reported VM locations;
+original PGM/YAML files and formal trial results have not been supplied.
